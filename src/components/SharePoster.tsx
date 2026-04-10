@@ -1,6 +1,6 @@
 'use client';
 
-import { forwardRef } from 'react';
+import { forwardRef, useState, useEffect } from 'react';
 import type { Level } from '@/data/scoring';
 import type { PersonalityType, PersonalityTheme } from '@/data/types';
 import { DEFAULT_THEME } from '@/data/types';
@@ -22,6 +22,18 @@ interface SharePosterProps {
 const SharePoster = forwardRef<HTMLDivElement, SharePosterProps>(
   ({ finalType, badge, imageUrl, theme: themeProp }, ref) => {
     const theme = themeProp ?? finalType.theme ?? DEFAULT_THEME;
+    const [qrDataUrl, setQrDataUrl] = useState<string | null>(null);
+
+    useEffect(() => {
+      import('qrcode').then((QRCode) => {
+        QRCode.toDataURL('https://maaker.cn/sbti', {
+          width: 80,
+          margin: 1,
+          color: { dark: '#E2E8F0', light: '#00000000' },
+          errorCorrectionLevel: 'M',
+        }).then(setQrDataUrl);
+      });
+    }, []);
 
     return (
       <div style={{ position: 'absolute', left: 0, top: 0, width: 0, height: 0, overflow: 'hidden', pointerEvents: 'none' }} aria-hidden="true">
@@ -198,22 +210,28 @@ const SharePoster = forwardRef<HTMLDivElement, SharePosterProps>(
           }}
         />
 
-        {/* Footer CTA */}
+        {/* Footer CTA with QR code */}
         <div
           style={{
-            paddingBottom: 32,
+            paddingBottom: 28,
             display: 'flex',
-            flexDirection: 'column',
             alignItems: 'center',
-            gap: 6,
+            justifyContent: 'center',
+            gap: 12,
             position: 'relative',
           }}
         >
-          <div style={{ fontSize: 11, color: '#64748B', letterSpacing: 0.5 }}>
-            测测你是什么人格
-          </div>
-          <div style={{ fontSize: 14, color: theme.accent, fontWeight: 700, letterSpacing: 1.5 }}>
-            maaker.ai/sbti
+          {qrDataUrl && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={qrDataUrl} alt="QR" width={64} height={64} style={{ borderRadius: 6 }} />
+          )}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+            <div style={{ fontSize: 11, color: '#64748B', letterSpacing: 0.5 }}>
+              扫码测测你的人格
+            </div>
+            <div style={{ fontSize: 13, color: theme.accent, fontWeight: 700, letterSpacing: 1 }}>
+              maaker.cn/sbti
+            </div>
           </div>
         </div>
       </div>
