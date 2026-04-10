@@ -68,13 +68,12 @@ function ResultContent() {
         wrapper.style.overflow = 'visible';
       }
 
-      // Small delay to let images render
-      await new Promise(r => setTimeout(r, 100));
-
-      const blob = await toBlob(posterRef.current, {
-        backgroundColor: '#0F0F23',
-        pixelRatio: 2,
-      });
+      // html-to-image workaround: first call warms up image loading,
+      // second call actually captures them correctly
+      const opts = { backgroundColor: '#0F0F23', pixelRatio: 2, cacheBust: true };
+      await toBlob(posterRef.current, opts).catch(() => {});
+      await new Promise(r => setTimeout(r, 200));
+      const blob = await toBlob(posterRef.current, opts);
 
       // Hide poster again
       if (wrapper) {
