@@ -14,12 +14,27 @@ function shuffle<T>(array: T[]): T[] {
   return arr;
 }
 
+/** Interpolate between two hex colors by t (0-1) */
+function lerpColor(a: string, b: string, t: number): string {
+  const parse = (hex: string) => {
+    const h = hex.replace('#', '');
+    return [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)];
+  };
+  const [r1, g1, b1] = parse(a);
+  const [r2, g2, b2] = parse(b);
+  const r = Math.round(r1 + (r2 - r1) * t);
+  const g = Math.round(g1 + (g2 - g1) * t);
+  const bl = Math.round(b1 + (b2 - b1) * t);
+  return `rgb(${r},${g},${bl})`;
+}
+
 export default function TestPage() {
   const router = useRouter();
   const [answers, setAnswers] = useState<Record<string, number>>({});
   const [currentIndex, setCurrentIndex] = useState(0);
   const [animDir, setAnimDir] = useState<'in' | 'out' | null>(null);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [showSubmit, setShowSubmit] = useState(false);
 
   // Shuffle questions once on mount, insert drink_gate_q1 randomly
   const [shuffledQuestions] = useState<Question[]>(() => {
@@ -47,6 +62,16 @@ export default function TestPage() {
   const answeredCount = visibleQuestions.filter((q) => answers[q.id] !== undefined).length;
   const progress = totalQuestions > 0 ? (answeredCount / totalQuestions) * 100 : 0;
   const allAnswered = answeredCount === totalQuestions && totalQuestions > 0;
+
+  // Trigger submit button appearance animation
+  useEffect(() => {
+    if (allAnswered) {
+      const timer = setTimeout(() => setShowSubmit(true), 100);
+      return () => clearTimeout(timer);
+    } else {
+      setShowSubmit(false);
+    }
+  }, [allAnswered]);
 
   const goToQuestion = useCallback(
     (newIndex: number, direction: 'forward' | 'back') => {
@@ -116,12 +141,36 @@ export default function TestPage() {
         ? 'animate-slide-out'
         : '';
 
+  // Dynamic background: purple → green as progress increases
+  const progressT = progress / 100;
+  const glowColor1 = lerpColor('#7C3AED', '#10B981', progressT);
+  const glowColor2 = lerpColor('#A78BFA', '#34D399', progressT);
+  const glowOpacity1 = 0.15;
+  const glowOpacity2 = 0.1;
+
+  // Milestone positions for progress bar (percentage)
+  const milestones = [25, 50, 75];
+
   return (
-    <div className="min-h-dvh flex flex-col bg-background">
+    <div className="min-h-dvh flex flex-col bg-background relative overflow-hidden">
+      {/* Dynamic background glow layers */}
+      <div
+        className="fixed inset-0 pointer-events-none transition-all duration-1000 ease-out"
+        style={{
+          background: `radial-gradient(ellipse 600px 400px at 30% 20%, ${glowColor1} ${glowOpacity1 * 100}%, transparent 70%)`,
+        }}
+      />
+      <div
+        className="fixed inset-0 pointer-events-none transition-all duration-1000 ease-out"
+        style={{
+          background: `radial-gradient(ellipse 500px 500px at 70% 80%, ${glowColor2} ${glowOpacity2 * 100}%, transparent 70%)`,
+        }}
+      />
+
       {/* Top bar */}
       <div className="sticky top-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border/30">
         <div className="max-w-2xl mx-auto px-4 py-3">
-          <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center justify-between mb-2.5">
             <button
               onClick={handleBack}
               disabled={currentIndex === 0}
@@ -137,13 +186,26 @@ export default function TestPage() {
             </span>
             <span className="text-sm text-secondary font-medium">{Math.round(progress)}%</span>
           </div>
-          {/* Progress bar with glow */}
-          <div className="h-1.5 bg-muted rounded-full overflow-hidden relative">
+          {/* Progress bar with milestones */}
+          <div className="relative h-2 bg-muted rounded-full overflow-visible">
+            {/* Milestone dots */}
+            {milestones.map((m) => (
+              <div
+                key={m}
+                className="absolute top-1/2 -translate-y-1/2 w-2 h-2 rounded-full border border-border/50 z-10 transition-colors duration-300"
+                style={{
+                  left: `${m}%`,
+                  transform: 'translate(-50%, -50%)',
+                  backgroundColor: progress >= m ? 'var(--accent)' : 'var(--muted)',
+                }}
+              />
+            ))}
+            {/* Bar fill */}
             <div
-              className="h-full progress-shimmer rounded-full transition-all duration-500 ease-out"
+              className="h-full progress-shimmer rounded-full transition-all duration-500 ease-out relative"
               style={{
                 width: `${progress}%`,
-                boxShadow: '0 0 10px rgba(124, 58, 237, 0.5), 0 0 20px rgba(124, 58, 237, 0.2)',
+                boxShadow: `0 0 12px ${glowColor1}80, 0 0 24px ${glowColor1}40`,
               }}
             />
           </div>
@@ -151,12 +213,12 @@ export default function TestPage() {
       </div>
 
       {/* Question area */}
-      <div className="flex-1 flex flex-col items-center justify-center px-4 py-8">
+      <div className="flex-1 flex flex-col items-center justify-center px-4 py-8 relative z-10">
         <div className={`w-full max-w-2xl ${animClass}`}>
-          {/* Question badge */}
-          <div className="flex items-center gap-2 mb-5">
-            <span className="text-xs px-3 py-1 rounded-full bg-primary/10 text-primary border border-primary/20 font-medium">
-              第 {currentIndex + 1} 题
+          {/* Question number - large display */}
+          <div className="flex items-center gap-3 mb-6">
+            <span className="font-display text-3xl text-primary/80">
+              Q{currentIndex + 1}
             </span>
             {currentQuestion.special && (
               <span className="text-xs px-3 py-1 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20 font-medium">
@@ -183,21 +245,21 @@ export default function TestPage() {
                   className={`w-full flex items-start gap-3 p-4 rounded-xl border transition-all duration-200 text-left min-h-[48px] btn-press
                     ${
                       isSelected
-                        ? 'border-primary/60 bg-primary/10 text-foreground shadow-[0_0_15px_rgba(124,58,237,0.2)]'
-                        : 'border-border/30 bg-card/30 hover:border-primary/30 hover:bg-card/50 text-card-foreground'
+                        ? 'border-primary/60 bg-primary/10 text-foreground shadow-[0_0_20px_rgba(124,58,237,0.25)]'
+                        : 'border-border/30 bg-card/30 hover:border-primary/30 hover:bg-card/50 hover:shadow-[0_0_10px_rgba(124,58,237,0.08)] text-card-foreground'
                     }`}
                 >
                   <span
-                    className={`flex-shrink-0 w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold transition-colors
+                    className={`flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold transition-all duration-200
                       ${
                         isSelected
-                          ? 'bg-primary text-white'
+                          ? 'bg-primary text-white scale-110'
                           : 'bg-muted text-muted-foreground'
                       }`}
                   >
                     {optionCode}
                   </span>
-                  <span className="pt-0.5 text-sm md:text-base leading-relaxed">{opt.label}</span>
+                  <span className="pt-1 text-sm md:text-base leading-relaxed">{opt.label}</span>
                 </button>
               );
             })}
@@ -207,13 +269,24 @@ export default function TestPage() {
 
       {/* Bottom submit */}
       {allAnswered && (
-        <div className="sticky bottom-0 bg-background/80 backdrop-blur-xl border-t border-border/30 p-4 animate-fade-in-up">
+        <div
+          className={`sticky bottom-0 bg-background/80 backdrop-blur-xl border-t border-border/30 p-4 transition-all duration-500 ease-out ${
+            showSubmit ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
+          }`}
+        >
           <div className="max-w-2xl mx-auto">
             <button
               onClick={handleSubmit}
-              className="w-full py-4 rounded-xl bg-gradient-to-r from-primary to-secondary text-white font-semibold text-lg transition-all duration-300 glow-primary btn-press"
+              className="w-full py-4 rounded-xl bg-gradient-to-r from-primary to-accent text-white font-semibold text-lg transition-all duration-300 glow-pulse btn-press relative overflow-hidden"
             >
-              查看我的人格结果
+              {/* Shimmer overlay */}
+              <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-[shimmer_2s_infinite]" />
+              <span className="relative flex items-center justify-center gap-2">
+                查看我的人格结果
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                </svg>
+              </span>
             </button>
           </div>
         </div>

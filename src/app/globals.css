@@ -158,6 +158,16 @@ body {
   z-index: 0;
 }
 
+/* Submit button shimmer sweep */
+@keyframes submitShimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+.animate-submit-shimmer {
+  animation: submitShimmer 2s ease-in-out infinite;
+}
+
 /* Reduced motion support */
 @media (prefers-reduced-motion: reduce) {
   .animate-fade-in-up,
@@ -177,5 +187,12 @@ body {
   }
   .btn-press:active {
     transform: none;
+  }
+  .animate-submit-shimmer {
+    animation: none;
+  }
+  /* Disable dynamic background transitions */
+  .transition-all {
+    transition: none;
   }
 }
