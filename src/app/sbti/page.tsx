@@ -83,12 +83,12 @@ export default function SBTIHome() {
           </p>
 
           {/* Character avatar showcase */}
-          <div className="flex items-center justify-center gap-[-8px] mb-10">
+          <div className="flex flex-col items-center gap-3 mb-10">
             <div className="flex -space-x-3">
               {avatarTypes.map((code, i) => (
                 <div
                   key={code}
-                  className="relative w-12 h-12 rounded-full border-2 border-background overflow-hidden ring-1 ring-[#EC4899]/30"
+                  className="relative w-10 h-10 md:w-12 md:h-12 rounded-full border-2 border-background overflow-hidden ring-1 ring-[#EC4899]/30"
                   style={{ zIndex: avatarTypes.length - i }}
                 >
                   <Image
@@ -101,7 +101,7 @@ export default function SBTIHome() {
                 </div>
               ))}
             </div>
-            <span className="ml-4 text-sm text-muted-foreground">
+            <span className="text-sm text-muted-foreground">
               26 种离谱人格等你解锁
             </span>
           </div>
