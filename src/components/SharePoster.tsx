@@ -197,7 +197,26 @@ const SharePoster = forwardRef<HTMLDivElement, SharePosterProps>(
           <span style={{ color: `${theme.accent}99`, fontSize: 24, fontFamily: 'Georgia, serif' }}>&rdquo;</span>
         </div>
 
-        {/* Spacer — intentional white space for premium feel */}
+        {/* Description excerpt — gives the poster substance */}
+        <div
+          style={{
+            marginTop: 20,
+            padding: '0 30px',
+            fontSize: 11.5,
+            color: '#94A3B8',
+            textAlign: 'center',
+            lineHeight: 1.9,
+            position: 'relative',
+            display: '-webkit-box',
+            WebkitLineClamp: 6,
+            WebkitBoxOrient: 'vertical',
+            overflow: 'hidden',
+          }}
+        >
+          {finalType.desc}
+        </div>
+
+        {/* Spacer */}
         <div style={{ flex: 1 }} />
 
         {/* Divider line */}
