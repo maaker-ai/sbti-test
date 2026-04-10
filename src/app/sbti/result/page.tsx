@@ -107,8 +107,8 @@ function ResultContent() {
       {/* Page content */}
       <div className="bg-background">
 
-        {/* ===== FIRST SCREEN: Emotional impact ===== */}
-        <section className="relative px-4 pt-16 pb-8 text-center overflow-hidden min-h-dvh flex flex-col justify-center">
+        {/* ===== Hero: visual impact + content flows naturally ===== */}
+        <section className="relative px-4 pt-16 pb-10 text-center overflow-hidden">
           {/* Background glows */}
           <div
             className="absolute top-[-100px] left-1/2 -translate-x-1/2 w-[500px] h-[500px] rounded-full blur-[120px] pointer-events-none"
@@ -124,11 +124,10 @@ function ResultContent() {
               {modeKicker}
             </p>
 
-            {/* Character image — the visual hero */}
+            {/* Character image */}
             {imageUrl && (
               <div className="mb-6 flex justify-center">
                 <div className="relative">
-                  {/* Glow ring behind image */}
                   <div
                     className="absolute -inset-3 rounded-3xl blur-2xl opacity-40"
                     style={{ background: `linear-gradient(135deg, ${theme.gradientFrom}, ${theme.gradientTo})` }}
@@ -136,8 +135,8 @@ function ResultContent() {
                   <Image
                     src={imageUrl}
                     alt={finalType.code}
-                    width={180}
-                    height={180}
+                    width={160}
+                    height={160}
                     className="rounded-2xl relative"
                     unoptimized
                   />
@@ -145,7 +144,7 @@ function ResultContent() {
               </div>
             )}
 
-            {/* Type code — big and gradient */}
+            {/* Type code */}
             <h1 className="font-display text-6xl md:text-7xl mb-2">
               <span
                 className="bg-clip-text text-transparent"
@@ -154,76 +153,69 @@ function ResultContent() {
                 {finalType.code}
               </span>
             </h1>
-            <h2 className="font-display text-2xl md:text-3xl text-foreground mb-5">{finalType.cn}</h2>
+            <h2 className="font-display text-2xl md:text-3xl text-foreground mb-4">{finalType.cn}</h2>
 
             {/* Badge */}
             <div
-              className="inline-flex px-4 py-1.5 rounded-full text-xs font-medium mb-6"
+              className="inline-flex px-4 py-1.5 rounded-full text-xs font-medium mb-5"
               style={{ color: theme.accent, background: `${theme.accent}12`, border: `1px solid ${theme.accent}30` }}
             >
               {badge}
             </div>
 
-            {/* Intro quote — the emotional hook */}
-            <p className="text-lg md:text-xl italic leading-relaxed mb-8 px-4" style={{ color: `${theme.accent}DD` }}>
+            {/* Intro quote */}
+            <p className="text-lg md:text-xl italic leading-relaxed px-4 mb-0" style={{ color: `${theme.accent}DD` }}>
               &ldquo;{finalType.intro}&rdquo;
             </p>
-
-            {/* Action buttons — right at the emotional peak */}
-            <div className="space-y-3 max-w-sm mx-auto">
-              <button
-                onClick={generatePoster}
-                disabled={posterGenerating}
-                className="w-full py-3.5 rounded-xl text-white font-semibold transition-all duration-300 flex items-center justify-center gap-2 btn-press min-h-[48px]"
-                style={{ background: `linear-gradient(135deg, ${theme.gradientFrom}, ${theme.gradientTo})`, boxShadow: `0 0 20px ${theme.accent}30` }}
-              >
-                {posterGenerating ? (
-                  <>
-                    <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                    </svg>
-                    生成中...
-                  </>
-                ) : (
-                  <>
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                    </svg>
-                    保存结果海报
-                  </>
-                )}
-              </button>
-
-              <button
-                onClick={copyShareLink}
-                className="w-full py-3 rounded-xl border text-sm font-medium transition-all duration-200 flex items-center justify-center gap-2 min-h-[44px]"
-                style={{ borderColor: `${theme.accent}30`, color: theme.accent }}
-              >
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
-                </svg>
-                复制分享链接
-              </button>
-            </div>
-
-            {/* Scroll hint */}
-            <div className="mt-8 animate-bounce opacity-40">
-              <svg className="w-5 h-5 mx-auto text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-              </svg>
-            </div>
           </div>
         </section>
 
-        {/* ===== BELOW FOLD: Details for the curious ===== */}
-
-        {/* Description */}
-        <section className="px-4 py-10">
+        {/* Description — flows naturally into view, no scroll guessing */}
+        <section className="px-4 pb-10">
           <div className="max-w-lg mx-auto">
             <div className="p-6 rounded-xl bg-card/50 border border-border/30">
               <p className="text-sm text-card-foreground leading-relaxed">{finalType.desc}</p>
             </div>
+          </div>
+        </section>
+
+        {/* Action buttons — after reading the analysis, higher conversion */}
+        <section className="px-4 pb-10">
+          <div className="max-w-lg mx-auto space-y-3">
+            <button
+              onClick={generatePoster}
+              disabled={posterGenerating}
+              className="w-full py-3.5 rounded-xl text-white font-semibold transition-all duration-300 flex items-center justify-center gap-2 btn-press min-h-[48px]"
+              style={{ background: `linear-gradient(135deg, ${theme.gradientFrom}, ${theme.gradientTo})`, boxShadow: `0 0 20px ${theme.accent}30` }}
+            >
+              {posterGenerating ? (
+                <>
+                  <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                  </svg>
+                  生成中...
+                </>
+              ) : (
+                <>
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                  保存结果海报
+                </>
+              )}
+            </button>
+
+            <button
+              onClick={copyShareLink}
+              className="w-full py-3 rounded-xl border text-sm font-medium transition-all duration-200 flex items-center justify-center gap-2 min-h-[44px]"
+              style={{ borderColor: `${theme.accent}30`, color: theme.accent }}
+            >
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+              </svg>
+              复制分享链接
+            </button>
           </div>
         </section>
 
