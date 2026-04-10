@@ -57,10 +57,33 @@ function ResultContent() {
     setPosterGenerating(true);
     try {
       const { toBlob } = await import('html-to-image');
+
+      // Temporarily make poster visible for rendering (iOS needs visible elements)
+      const wrapper = posterRef.current.parentElement;
+      if (wrapper) {
+        wrapper.style.width = '480px';
+        wrapper.style.height = '800px';
+        wrapper.style.position = 'fixed';
+        wrapper.style.left = '-9999px';
+        wrapper.style.overflow = 'visible';
+      }
+
+      // Small delay to let images render
+      await new Promise(r => setTimeout(r, 100));
+
       const blob = await toBlob(posterRef.current, {
         backgroundColor: '#0F0F23',
         pixelRatio: 2,
       });
+
+      // Hide poster again
+      if (wrapper) {
+        wrapper.style.width = '0';
+        wrapper.style.height = '0';
+        wrapper.style.position = 'absolute';
+        wrapper.style.left = '0';
+        wrapper.style.overflow = 'hidden';
+      }
       if (!blob) throw new Error('Failed to generate image');
 
       const fileName = `SBTI-${result?.finalType.code || 'result'}.png`;
