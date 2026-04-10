@@ -171,7 +171,7 @@ function ResultContent() {
         </section>
 
         {/* Description — flows naturally into view, no scroll guessing */}
-        <section className="px-4 pb-10">
+        <section className="px-4 pt-6 pb-10">
           <div className="max-w-lg mx-auto">
             <div className="p-6 rounded-xl bg-card/50 border border-border/30">
               <p className="text-sm text-card-foreground leading-relaxed">{finalType.desc}</p>
