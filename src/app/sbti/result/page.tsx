@@ -49,17 +49,33 @@ function ResultContent() {
     if (!posterRef.current || posterGenerating) return;
     setPosterGenerating(true);
     try {
-      const { toPng } = await import('html-to-image');
-      const dataUrl = await toPng(posterRef.current, {
+      const { toBlob } = await import('html-to-image');
+      const blob = await toBlob(posterRef.current, {
         backgroundColor: '#0F0F23',
         pixelRatio: 2,
       });
-      const link = document.createElement('a');
-      link.download = `SBTI-${result?.finalType.code || 'result'}.png`;
-      link.href = dataUrl;
-      link.click();
+      if (!blob) throw new Error('Failed to generate image');
+
+      const fileName = `SBTI-${result?.finalType.code || 'result'}.png`;
+      const file = new File([blob], fileName, { type: 'image/png' });
+
+      // iOS/mobile: use Web Share API if available (saves to photos / share to apps)
+      if (navigator.share && navigator.canShare?.({ files: [file] })) {
+        await navigator.share({ files: [file], title: `SBTI - ${result?.finalType.code}` });
+      } else {
+        // Desktop fallback: download
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.download = fileName;
+        link.href = url;
+        link.click();
+        URL.revokeObjectURL(url);
+      }
     } catch (e) {
-      console.error('Failed to generate poster:', e);
+      // User cancelled share is not an error
+      if (e instanceof Error && e.name !== 'AbortError') {
+        console.error('Failed to generate poster:', e);
+      }
     } finally {
       setPosterGenerating(false);
     }
