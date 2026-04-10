@@ -43,8 +43,8 @@ const SharePoster = forwardRef<HTMLDivElement, SharePosterProps>(
       <div
         ref={ref}
         style={{
-          width: 440,
-          height: 780,
+          width: 480,
+          height: 800,
           background: `linear-gradient(180deg, #0F0F23 0%, #110E2A 40%, #0F0F23 100%)`,
           fontFamily: "'Poppins', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif",
           color: '#E2E8F0',
@@ -167,7 +167,7 @@ const SharePoster = forwardRef<HTMLDivElement, SharePosterProps>(
         <div
           style={{
             marginTop: 16,
-            padding: '6px 16px',
+            padding: '5px 12px',
             borderRadius: 20,
             background: `${theme.accent}15`,
             border: `1px solid ${theme.accent}40`,
@@ -175,6 +175,7 @@ const SharePoster = forwardRef<HTMLDivElement, SharePosterProps>(
             color: theme.accent,
             fontWeight: 500,
             position: 'relative',
+            whiteSpace: 'nowrap',
           }}
         >
           {badge}
