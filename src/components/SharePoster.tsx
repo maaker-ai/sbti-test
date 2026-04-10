@@ -23,6 +23,10 @@ interface SharePosterProps {
 const SharePoster = forwardRef<HTMLDivElement, SharePosterProps>(
   ({ finalType, badge, imageUrl, theme: themeProp, shareUrl }, ref) => {
     const theme = themeProp ?? finalType.theme ?? DEFAULT_THEME;
+    // html-to-image needs absolute URL for images
+    const absImageUrl = imageUrl && typeof window !== 'undefined'
+      ? new URL(imageUrl, window.location.origin).href
+      : imageUrl;
     const [qrDataUrl, setQrDataUrl] = useState<string | null>(null);
 
     useEffect(() => {
@@ -102,7 +106,7 @@ const SharePoster = forwardRef<HTMLDivElement, SharePosterProps>(
         </div>
 
         {/* Character image — the visual hero */}
-        {imageUrl && (
+        {absImageUrl && (
           <div style={{ marginTop: 24, position: 'relative' }}>
             {/* Glow ring behind image */}
             <div
@@ -119,7 +123,7 @@ const SharePoster = forwardRef<HTMLDivElement, SharePosterProps>(
             />
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src={imageUrl}
+              src={absImageUrl}
               alt={finalType.code}
               width={200}
               height={200}
@@ -135,7 +139,7 @@ const SharePoster = forwardRef<HTMLDivElement, SharePosterProps>(
         {/* Type code — big, gradient, unmissable */}
         <div
           style={{
-            marginTop: imageUrl ? 24 : 60,
+            marginTop: absImageUrl ? 24 : 60,
             fontSize: 56,
             fontWeight: 900,
             fontFamily: "'Righteous', 'Poppins', sans-serif",
