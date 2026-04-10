@@ -171,14 +171,14 @@ function ResultContent() {
       {/* Page content */}
       <div className="bg-background">
 
-        {/* Top bar with share button */}
+        {/* Floating share button */}
         {!isFromShare && (
-          <div className="sticky top-0 z-50 flex justify-end px-4 py-3 bg-background/60 backdrop-blur-xl">
+          <div className="fixed top-4 right-4 z-50">
             <button
               onClick={generatePoster}
               disabled={posterGenerating}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 min-h-[36px] btn-press"
-              style={{ color: theme.accent, background: `${theme.accent}15`, border: `1px solid ${theme.accent}30` }}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 min-h-[36px] btn-press backdrop-blur-xl"
+              style={{ color: theme.accent, background: `${theme.accent}20`, border: `1px solid ${theme.accent}30` }}
             >
               {posterGenerating ? (
                 <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
@@ -196,7 +196,7 @@ function ResultContent() {
         )}
 
         {/* ===== Hero: visual impact + content flows naturally ===== */}
-        <section className="relative px-4 pt-10 pb-10 text-center overflow-hidden">
+        <section className="relative px-4 pt-16 pb-10 text-center overflow-hidden">
           {/* Background glows */}
           <div
             className="absolute top-[-100px] left-1/2 -translate-x-1/2 w-[500px] h-[500px] rounded-full blur-[120px] pointer-events-none"
