@@ -70,7 +70,6 @@ function ResultContent() {
       // Strategy 1: Web Share API (iOS Safari, some Android browsers)
       if (navigator.share && navigator.canShare?.({ files: [file] })) {
         await navigator.share({ files: [file], title: `SBTI - ${result?.finalType.code}` });
-        showToast('分享成功');
       }
       // Strategy 2: Mobile without share API (WeChat, QQ, etc.) → show image overlay for long-press save
       // Must use base64 data URL, not blob URL — WeChat can't save blob URLs
@@ -399,7 +398,7 @@ function ResultContent() {
 
       {/* Toast */}
       {toast && (
-        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[100] px-5 py-2.5 rounded-xl bg-card/95 border border-border/50 text-sm text-foreground backdrop-blur-xl shadow-lg animate-fade-in-up">
+        <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-[100] px-6 py-3 rounded-xl bg-card/95 border border-border/50 text-base font-medium text-foreground backdrop-blur-xl shadow-lg animate-fade-in-up">
           {toast}
         </div>
       )}
