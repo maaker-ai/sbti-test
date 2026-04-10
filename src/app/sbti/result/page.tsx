@@ -114,8 +114,32 @@ function ResultContent() {
       {/* Page content */}
       <div className="bg-background">
 
+        {/* Top bar with share button */}
+        {!isFromShare && (
+          <div className="sticky top-0 z-50 flex justify-end px-4 py-3 bg-background/60 backdrop-blur-xl">
+            <button
+              onClick={generatePoster}
+              disabled={posterGenerating}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 min-h-[36px] btn-press"
+              style={{ color: theme.accent, background: `${theme.accent}15`, border: `1px solid ${theme.accent}30` }}
+            >
+              {posterGenerating ? (
+                <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                </svg>
+              ) : (
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                </svg>
+              )}
+              {posterGenerating ? '生成中' : '分享'}
+            </button>
+          </div>
+        )}
+
         {/* ===== Hero: visual impact + content flows naturally ===== */}
-        <section className="relative px-4 pt-16 pb-10 text-center overflow-hidden">
+        <section className="relative px-4 pt-10 pb-10 text-center overflow-hidden">
           {/* Background glows */}
           <div
             className="absolute top-[-100px] left-1/2 -translate-x-1/2 w-[500px] h-[500px] rounded-full blur-[120px] pointer-events-none"
