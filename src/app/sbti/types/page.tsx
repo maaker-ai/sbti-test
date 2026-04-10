@@ -4,8 +4,16 @@ import { TYPE_LIBRARY, TYPE_GROUPS } from '@/data/types';
 import Footer from '@/components/Footer';
 
 export const metadata: Metadata = {
-  title: '26 种人格类型总览',
-  description: '浏览 SBTI 全部 26 种人格类型：从拿捏者到小丑，从酒鬼到废物，总有一款是你。',
+  title: '26种人格类型总览',
+  description: '探索 SBTI 的 26 种独特人格类型 — 拿捏者、酒鬼、小丑、尤物、死者...找到属于你的那一个。',
+  openGraph: {
+    title: 'SBTI 26种人格类型总览',
+    description: '探索 SBTI 的 26 种独特人格类型 — 拿捏者、酒鬼、小丑、尤物、死者...找到属于你的那一个。',
+    url: 'https://maaker.cn/sbti/types',
+  },
+  alternates: {
+    canonical: 'https://maaker.cn/sbti/types',
+  },
 };
 
 export default function TypesPage() {

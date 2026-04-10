@@ -26,9 +26,27 @@ export async function generateMetadata({
     return { title: '未知人格类型' };
   }
 
+  const imageUrl = TYPE_IMAGES[code];
+  const descSnippet = `${type.intro} — ${type.desc.slice(0, 100)}`;
+
   return {
     title: `SBTI ${type.code}（${type.cn}）人格详解`,
-    description: `${type.intro} — ${type.desc.slice(0, 120)}...`,
+    description: descSnippet,
+    openGraph: {
+      title: `SBTI ${type.code}（${type.cn}）人格详解`,
+      description: descSnippet,
+      url: `https://maaker.cn/sbti/types/${encodeURIComponent(type.code)}`,
+      images: imageUrl ? [{ url: imageUrl, width: 1024, height: 1024, alt: `${type.code} ${type.cn}` }] : undefined,
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `SBTI ${type.code}（${type.cn}）— 你是这种人格吗？`,
+      description: type.intro,
+      images: imageUrl ? [imageUrl] : undefined,
+    },
+    alternates: {
+      canonical: `https://maaker.cn/sbti/types/${encodeURIComponent(type.code)}`,
+    },
   };
 }
 
@@ -57,8 +75,26 @@ export default async function TypeDetailPage({
     H: 'text-accent bg-accent/10 border-accent/20',
   };
 
+  const articleJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: `SBTI ${type.code}（${type.cn}）人格详解`,
+    description: type.intro,
+    image: imageUrl ? `https://maaker.cn${imageUrl}` : undefined,
+    url: `https://maaker.cn/sbti/types/${encodeURIComponent(type.code)}`,
+    publisher: {
+      '@type': 'Organization',
+      name: 'SBTI 人格测试',
+      url: 'https://maaker.cn/sbti',
+    },
+  };
+
   return (
     <div className="min-h-dvh flex flex-col">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
+      />
       <div className="px-4 pt-10 pb-4">
         <div className="max-w-2xl mx-auto">
           <Link

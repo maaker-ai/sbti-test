@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /sbti/test
+Disallow: /sbti/result
+
+Sitemap: https://maaker.cn/sitemap.xml
