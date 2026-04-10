@@ -24,6 +24,7 @@ function ResultContent() {
   const posterRef = useRef<HTMLDivElement>(null);
   const [posterGenerating, setPosterGenerating] = useState(false);
   const [toast, setToast] = useState('');
+  const [posterPreview, setPosterPreview] = useState('');
   const [currentUrl, setCurrentUrl] = useState('');
 
   useEffect(() => {
@@ -66,11 +67,18 @@ function ResultContent() {
       const file = new File([blob], fileName, { type: 'image/png' });
 
       // iOS/mobile: use Web Share API if available (saves to photos / share to apps)
+      // Strategy 1: Web Share API (iOS Safari, some Android browsers)
       if (navigator.share && navigator.canShare?.({ files: [file] })) {
         await navigator.share({ files: [file], title: `SBTI - ${result?.finalType.code}` });
         showToast('分享成功');
-      } else {
-        // Desktop fallback: download
+      }
+      // Strategy 2: Mobile without share API (WeChat, QQ, etc.) → show image overlay for long-press save
+      else if (/Mobile|Android/i.test(navigator.userAgent)) {
+        const dataUrl = URL.createObjectURL(blob);
+        setPosterPreview(dataUrl);
+      }
+      // Strategy 3: Desktop → download file
+      else {
         const url = URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.download = fileName;
@@ -367,6 +375,23 @@ function ResultContent() {
 
       <div className="flex-1" />
       <Footer />
+
+      {/* Poster preview overlay — for WeChat/mobile long-press save */}
+      {posterPreview && (
+        <div
+          className="fixed inset-0 z-[200] bg-black/90 flex flex-col items-center justify-center p-6"
+          onClick={() => { URL.revokeObjectURL(posterPreview); setPosterPreview(''); }}
+        >
+          <p className="text-white/80 text-sm mb-4">长按图片保存到相册</p>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={posterPreview}
+            alt="SBTI 结果海报"
+            className="max-w-full max-h-[75vh] rounded-xl shadow-2xl"
+          />
+          <p className="text-white/50 text-xs mt-4">点击任意处关闭</p>
+        </div>
+      )}
 
       {/* Toast */}
       {toast && (
