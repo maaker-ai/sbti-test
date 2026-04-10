@@ -20,6 +20,7 @@ import Footer from '@/components/Footer';
 function ResultContent() {
   const searchParams = useSearchParams();
   const encoded = searchParams.get('d');
+  const isFromShare = searchParams.get('from') === 'share';
   const posterRef = useRef<HTMLDivElement>(null);
   const [posterGenerating, setPosterGenerating] = useState(false);
   const [currentUrl, setCurrentUrl] = useState('');
@@ -188,40 +189,57 @@ function ResultContent() {
         {/* Action buttons — after reading the analysis, higher conversion */}
         <section className="px-4 pb-10">
           <div className="max-w-lg mx-auto space-y-3">
-            <button
-              onClick={generatePoster}
-              disabled={posterGenerating}
-              className="w-full py-3.5 rounded-xl text-white font-semibold transition-all duration-300 flex items-center justify-center gap-2 btn-press min-h-[48px]"
-              style={{ background: `linear-gradient(135deg, ${theme.gradientFrom}, ${theme.gradientTo})`, boxShadow: `0 0 20px ${theme.accent}30` }}
-            >
-              {posterGenerating ? (
-                <>
-                  <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                  </svg>
-                  生成中...
-                </>
-              ) : (
-                <>
-                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                  </svg>
-                  保存结果海报
-                </>
-              )}
-            </button>
+            {isFromShare ? (
+              /* 扫码/分享链接进来的人 → 引导去测试 */
+              <Link
+                href="/sbti/test"
+                className="w-full py-3.5 rounded-xl text-white font-semibold transition-all duration-300 flex items-center justify-center gap-2 btn-press min-h-[48px]"
+                style={{ background: `linear-gradient(135deg, ${theme.gradientFrom}, ${theme.gradientTo})`, boxShadow: `0 0 20px ${theme.accent}30` }}
+              >
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                </svg>
+                我也要测试
+              </Link>
+            ) : (
+              /* 自己测完的 → 保存海报 + 分享 */
+              <>
+                <button
+                  onClick={generatePoster}
+                  disabled={posterGenerating}
+                  className="w-full py-3.5 rounded-xl text-white font-semibold transition-all duration-300 flex items-center justify-center gap-2 btn-press min-h-[48px]"
+                  style={{ background: `linear-gradient(135deg, ${theme.gradientFrom}, ${theme.gradientTo})`, boxShadow: `0 0 20px ${theme.accent}30` }}
+                >
+                  {posterGenerating ? (
+                    <>
+                      <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                      </svg>
+                      生成中...
+                    </>
+                  ) : (
+                    <>
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                      保存结果海报
+                    </>
+                  )}
+                </button>
 
-            <button
-              onClick={copyShareLink}
-              className="w-full py-3 rounded-xl border text-sm font-medium transition-all duration-200 flex items-center justify-center gap-2 min-h-[44px]"
-              style={{ borderColor: `${theme.accent}30`, color: theme.accent }}
-            >
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
-              </svg>
-              复制分享链接
-            </button>
+                <button
+                  onClick={copyShareLink}
+                  className="w-full py-3 rounded-xl border text-sm font-medium transition-all duration-200 flex items-center justify-center gap-2 min-h-[44px]"
+                  style={{ borderColor: `${theme.accent}30`, color: theme.accent }}
+                >
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                  </svg>
+                  复制分享链接
+                </button>
+              </>
+            )}
           </div>
         </section>
 

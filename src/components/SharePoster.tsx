@@ -26,7 +26,8 @@ const SharePoster = forwardRef<HTMLDivElement, SharePosterProps>(
     const [qrDataUrl, setQrDataUrl] = useState<string | null>(null);
 
     useEffect(() => {
-      const qrTarget = shareUrl || 'https://maaker.cn/sbti';
+      const base = shareUrl || 'https://maaker.cn/sbti';
+      const qrTarget = base + (base.includes('?') ? '&' : '?') + 'from=share';
       import('qrcode').then((QRCode) => {
         QRCode.toDataURL(qrTarget, {
           width: 80,
