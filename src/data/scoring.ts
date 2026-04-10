@@ -224,17 +224,14 @@ export function decodeShareUrl(encoded: string): TestResult | null {
     }
 
     // Build a minimal bestNormal
-    const bestNormal: RankedType = {
-      code: isDrunk ? (secondaryType?.code || typeCode) : typeCode,
+    const bestNormalCode = isDrunk ? (secondaryType?.code || typeCode) : typeCode;
+    const libEntry = TYPE_LIBRARY[bestNormalCode] ?? { code: bestNormalCode, cn: '', intro: '', desc: '' };
+    const bestNormal: RankedType = Object.assign({}, libEntry, {
       pattern: '',
-      cn: '',
-      intro: '',
-      desc: '',
       distance: 0,
       exact,
       similarity,
-      ...(TYPE_LIBRARY[isDrunk ? (secondaryType?.code || typeCode) : typeCode] || {}),
-    };
+    });
 
     return {
       rawScores,

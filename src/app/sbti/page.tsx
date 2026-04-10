@@ -56,12 +56,12 @@ export default function SBTIHome() {
     <div className="min-h-dvh flex flex-col">
       {/* Hero */}
       <section className="relative flex flex-col items-center justify-center px-6 pt-28 pb-24 text-center overflow-hidden noise-bg">
-        {/* Background gradient orbs — more layers, more purple */}
-        <div className="absolute top-[-160px] left-1/2 -translate-x-1/2 w-[700px] h-[700px] bg-primary/20 rounded-full blur-[180px] pointer-events-none" />
-        <div className="absolute bottom-[-100px] right-[-120px] w-[400px] h-[400px] bg-accent/12 rounded-full blur-[140px] pointer-events-none" />
-        <div className="absolute top-[250px] left-[-120px] w-[300px] h-[300px] bg-secondary/15 rounded-full blur-[120px] pointer-events-none" />
-        <div className="absolute top-[100px] right-[10%] w-[200px] h-[200px] bg-primary/10 rounded-full blur-[100px] pointer-events-none" />
-        <div className="absolute bottom-[20%] left-[15%] w-[180px] h-[180px] bg-secondary/8 rounded-full blur-[90px] pointer-events-none" />
+        {/* Background gradient orbs — multi-color for richness */}
+        <div className="absolute top-[-160px] left-1/2 -translate-x-1/2 w-[700px] h-[700px] rounded-full blur-[180px] pointer-events-none" style={{ background: 'rgba(168,85,247,0.18)' }} />
+        <div className="absolute bottom-[-100px] right-[-120px] w-[400px] h-[400px] rounded-full blur-[140px] pointer-events-none" style={{ background: 'rgba(236,72,153,0.12)' }} />
+        <div className="absolute top-[250px] left-[-120px] w-[300px] h-[300px] rounded-full blur-[120px] pointer-events-none" style={{ background: 'rgba(245,158,11,0.10)' }} />
+        <div className="absolute top-[100px] right-[10%] w-[200px] h-[200px] rounded-full blur-[100px] pointer-events-none" style={{ background: 'rgba(16,185,129,0.10)' }} />
+        <div className="absolute bottom-[20%] left-[15%] w-[180px] h-[180px] rounded-full blur-[90px] pointer-events-none" style={{ background: 'rgba(124,58,237,0.10)' }} />
 
         <div className="relative z-10 max-w-2xl mx-auto animate-fade-in-up">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 mb-8 rounded-full border border-border/50 bg-card/50 text-xs text-muted-foreground">
@@ -88,7 +88,7 @@ export default function SBTIHome() {
               {avatarTypes.map((code, i) => (
                 <div
                   key={code}
-                  className="relative w-12 h-12 rounded-full border-2 border-background overflow-hidden ring-1 ring-primary/30"
+                  className="relative w-12 h-12 rounded-full border-2 border-background overflow-hidden ring-1 ring-[#EC4899]/30"
                   style={{ zIndex: avatarTypes.length - i }}
                 >
                   <Image
@@ -108,7 +108,7 @@ export default function SBTIHome() {
 
           <Link
             href="/sbti/test"
-            className="inline-flex items-center gap-2 px-10 py-4.5 rounded-xl bg-gradient-to-r from-primary to-secondary text-white font-semibold text-lg transition-all duration-300 hover:scale-105 glow-primary glow-primary-hover btn-press"
+            className="inline-flex items-center gap-2 px-10 py-4.5 rounded-xl bg-gradient-to-r from-[#A855F7] via-[#EC4899] to-[#F59E0B] text-white font-semibold text-lg transition-all duration-300 hover:scale-105 shadow-[0_0_25px_rgba(236,72,153,0.4),0_0_60px_rgba(168,85,247,0.2)] hover:shadow-[0_0_35px_rgba(236,72,153,0.5),0_0_80px_rgba(168,85,247,0.3)] btn-press"
           >
             开始测试
             <svg
@@ -251,7 +251,7 @@ export default function SBTIHome() {
           <p className="text-muted-foreground mb-6 text-lg">准备好了吗？</p>
           <Link
             href="/sbti/test"
-            className="inline-flex items-center gap-2 px-10 py-4.5 rounded-xl bg-gradient-to-r from-primary to-secondary text-white font-semibold text-lg transition-all duration-300 hover:scale-105 glow-primary glow-primary-hover btn-press"
+            className="inline-flex items-center gap-2 px-10 py-4.5 rounded-xl bg-gradient-to-r from-[#A855F7] via-[#EC4899] to-[#F59E0B] text-white font-semibold text-lg transition-all duration-300 hover:scale-105 shadow-[0_0_25px_rgba(236,72,153,0.4),0_0_60px_rgba(168,85,247,0.2)] hover:shadow-[0_0_35px_rgba(236,72,153,0.5),0_0_80px_rgba(168,85,247,0.3)] btn-press"
           >
             开始测试
             <svg
