@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>SBTI 全人格预览</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #0F0F23; color: #E2E8F0; font-family: -apple-system, sans-serif; }
+  .tabs { display: flex; flex-wrap: wrap; gap: 6px; padding: 12px; position: sticky; top: 0; background: #0F0F23; z-index: 100; border-bottom: 1px solid #1E1C35; }
+  .tab { padding: 6px 12px; border-radius: 8px; border: 1px solid #333; background: #1E1C35; color: #94A3B8; cursor: pointer; font-size: 12px; font-weight: 600; transition: all 0.2s; }
+  .tab:hover { border-color: #7C3AED; color: #E2E8F0; }
+  .tab.active { background: #7C3AED; border-color: #7C3AED; color: #fff; }
+  iframe { width: 100%; height: calc(100vh - 80px); border: none; }
+</style>
+</head>
+<body>
+<div class="tabs" id="tabs"></div>
+<iframe id="frame" src=""></iframe>
+<script>
+const types = [
+  { code: 'CTRL', cn: '拿捏者', r: 'CTRL.85.12.HHH-HMH-MHH-HHH-MHM.666-646-466-666-464' },
+  { code: 'ATM-er', cn: '送钱者', r: 'ATM-er.85.12.HHH-HHM-HHH-HMH-MHL.666-664-666-646-462' },
+  { code: 'Dior-s', cn: '屌丝', r: 'Dior-s.85.12.MHM-MMH-MHM-HMH-LHL.464-446-464-646-262' },
+  { code: 'BOSS', cn: '领导者', r: 'BOSS.85.12.HHH-HMH-MMH-HHH-LHL.666-646-446-666-262' },
+  { code: 'THAN-K', cn: '感恩者', r: 'THAN-K.85.12.MHM-HMM-HHM-MMH-MHL.464-644-664-446-462' },
+  { code: 'OH-NO', cn: '哦不人', r: 'OH-NO.85.12.HHL-LMH-LHH-HHM-LHL.662-246-266-664-262' },
+  { code: 'GOGO', cn: '行者', r: 'GOGO.85.12.HHM-HMH-MMH-HHH-MHM.664-646-446-666-464' },
+  { code: 'SEXY', cn: '尤物', r: 'SEXY.85.12.HMH-HHL-HMM-HMM-HLH.646-662-644-644-626' },
+  { code: 'LOVE-R', cn: '多情者', r: 'LOVE-R.85.12.MLH-LHL-HLH-MLM-MLH.426-262-626-424-426' },
+  { code: 'MUM', cn: '妈妈', r: 'MUM.85.12.MMH-MHL-HMM-LMM-HLL.446-462-644-244-622' },
+  { code: 'FAKE', cn: '伪人', r: 'FAKE.85.12.HLM-MML-MLM-MLM-HLH.624-442-424-424-626' },
+  { code: 'OJBK', cn: '无所谓人', r: 'OJBK.85.12.MMH-MMM-HML-LMM-MML.446-444-642-244-442' },
+  { code: 'MALO', cn: '吗喽', r: 'MALO.85.12.MLH-MHM-MLH-MLH-LMH.426-464-426-426-246' },
+  { code: 'JOKE-R', cn: '小丑', r: 'JOKE-R.85.12.LLH-LHL-LML-LLL-MLM.226-262-242-222-424' },
+  { code: 'WOC!', cn: '握草人', r: 'WOC!.85.12.HHL-HMH-MMH-HHM-LHH.662-646-446-664-266' },
+  { code: 'THIN-K', cn: '思考者', r: 'THIN-K.85.12.HHL-HMH-MLH-MHM-LHH.662-646-426-464-266' },
+  { code: 'SHIT', cn: '愤世者', r: 'SHIT.85.12.HHL-HLH-LMM-HHM-LHH.662-626-244-664-266' },
+  { code: 'ZZZZ', cn: '装死者', r: 'ZZZZ.85.12.MHL-MLH-LML-MML-LHM.462-426-242-442-264' },
+  { code: 'POOR', cn: '贫困者', r: 'POOR.85.12.HHL-MLH-LMH-HHH-LHL.662-426-246-666-262' },
+  { code: 'MONK', cn: '僧人', r: 'MONK.85.12.HHL-LLH-LLM-MML-LHM.662-226-224-442-264' },
+  { code: 'IMSB', cn: '傻者', r: 'IMSB.85.12.LLM-LMM-LLL-LLL-MLM.224-244-222-222-424' },
+  { code: 'SOLO', cn: '孤儿', r: 'SOLO.85.12.LML-LLH-LHL-LML-LHM.242-226-262-242-264' },
+  { code: 'FUCK', cn: '草者', r: 'FUCK.85.12.MLL-LHL-LLM-MLL-HLH.422-262-224-422-626' },
+  { code: 'DEAD', cn: '死者', r: 'DEAD.85.12.LLL-LLM-LML-LLL-LHM.222-224-242-222-264' },
+  { code: 'IMFW', cn: '废物', r: 'IMFW.85.12.LLH-LHL-LML-LLL-MLL.226-262-242-222-422' },
+  { code: 'HHHH', cn: '傻乐者', r: 'HHHH.50.5.MMM-MMM-MMM-MMM-MMM.444-444-444-444-444.H' },
+  { code: 'DRUNK', cn: '酒鬼', r: 'DRUNK.85.12.MMM-MMM-MMM-MMM-MMM.444-444-444-444-444.D' },
+];
+
+const tabs = document.getElementById('tabs');
+const frame = document.getElementById('frame');
+
+types.forEach((t, i) => {
+  const btn = document.createElement('button');
+  btn.className = 'tab';
+  btn.textContent = t.code;
+  btn.title = t.cn;
+  btn.onclick = () => {
+    document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    frame.src = '/sbti/result?r=' + encodeURIComponent(t.r);
+  };
+  tabs.appendChild(btn);
+  if (i === 0) btn.click();
+});
+</script>
+</body>
+</html>
