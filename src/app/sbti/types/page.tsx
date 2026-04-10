@@ -10,41 +10,41 @@ export const metadata: Metadata = {
 
 export default function TypesPage() {
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-dvh flex flex-col">
       {/* Header */}
-      <div className="px-4 pt-8 pb-4">
+      <div className="px-4 pt-10 pb-6">
         <div className="max-w-4xl mx-auto">
           <Link
             href="/sbti"
-            className="inline-flex items-center gap-1 text-sm text-zinc-500 hover:text-zinc-300 transition-colors mb-6"
+            className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors mb-8 min-h-[44px]"
           >
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
             </svg>
             返回首页
           </Link>
-          <h1 className="text-3xl md:text-4xl font-black mb-2">
+          <h1 className="font-display text-4xl md:text-5xl mb-3">
             <span className="gradient-text">26 种人格</span>
           </h1>
-          <p className="text-zinc-400">按性格倾向分为 5 组，点击查看详情</p>
+          <p className="text-muted-foreground">按性格倾向分为 5 组，点击查看详情</p>
         </div>
       </div>
 
       {/* Groups */}
-      <div className="px-4 pb-12 flex-1">
-        <div className="max-w-4xl mx-auto space-y-8">
+      <div className="px-4 pb-16 flex-1">
+        <div className="max-w-4xl mx-auto space-y-12">
           {TYPE_GROUPS.map((group) => (
             <section key={group.name}>
-              <div className="flex items-center gap-3 mb-4">
+              <div className="flex items-center gap-3 mb-5">
                 <div
                   className="w-3 h-3 rounded-full"
                   style={{ backgroundColor: group.color }}
                 />
-                <h2 className="text-xl font-bold text-zinc-200">{group.name}</h2>
-                <span className="text-sm text-zinc-500">{group.description}</span>
+                <h2 className="font-display text-xl text-foreground">{group.name}</h2>
+                <span className="text-sm text-muted-foreground">{group.description}</span>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                 {group.codes.map((code) => {
                   const type = TYPE_LIBRARY[code];
                   if (!type) return null;
@@ -53,17 +53,17 @@ export default function TypesPage() {
                     <Link
                       key={code}
                       href={`/sbti/types/${encodeURIComponent(code)}`}
-                      className="group p-4 rounded-xl bg-zinc-900/50 border border-zinc-800/50 hover:border-zinc-600/50 transition-all duration-300 hover:bg-zinc-800/30"
+                      className="group p-5 rounded-xl bg-card/50 border border-border/30 card-glow"
                     >
                       <div className="flex items-start justify-between mb-2">
                         <span
-                          className="text-lg font-black transition-colors"
+                          className="text-lg font-display transition-colors"
                           style={{ color: group.color }}
                         >
                           {type.code}
                         </span>
                         <svg
-                          className="w-4 h-4 text-zinc-600 group-hover:text-zinc-400 transition-colors mt-1"
+                          className="w-4 h-4 text-muted-foreground/50 group-hover:text-primary transition-colors mt-1"
                           fill="none"
                           viewBox="0 0 24 24"
                           stroke="currentColor"
@@ -72,8 +72,8 @@ export default function TypesPage() {
                           <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
                         </svg>
                       </div>
-                      <div className="text-sm font-medium text-zinc-300 mb-1">{type.cn}</div>
-                      <div className="text-xs text-zinc-500 line-clamp-2">{type.intro}</div>
+                      <div className="text-sm font-medium text-card-foreground mb-1">{type.cn}</div>
+                      <div className="text-xs text-muted-foreground line-clamp-2">{type.intro}</div>
                     </Link>
                   );
                 })}
@@ -84,11 +84,11 @@ export default function TypesPage() {
       </div>
 
       {/* CTA */}
-      <section className="px-4 py-8 text-center border-t border-zinc-800/50">
-        <p className="text-zinc-400 mb-4">想知道你是哪种人格？</p>
+      <section className="px-4 py-10 text-center border-t border-border/30">
+        <p className="text-muted-foreground mb-5">想知道你是哪种人格？</p>
         <Link
           href="/sbti/test"
-          className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold transition-colors"
+          className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-primary to-secondary text-white font-semibold transition-all duration-300 hover:scale-105 glow-primary btn-press min-h-[48px]"
         >
           开始测试
         </Link>

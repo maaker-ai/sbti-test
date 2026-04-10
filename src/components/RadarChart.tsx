@@ -80,7 +80,7 @@ export default function RadarChart({ levels, size = 300, className = '' }: Radar
           key={i}
           points={points}
           fill="none"
-          stroke="rgba(255,255,255,0.1)"
+          stroke="rgba(76, 29, 149, 0.3)"
           strokeWidth="1"
         />
       ))}
@@ -93,12 +93,12 @@ export default function RadarChart({ levels, size = 300, className = '' }: Radar
           y1={axis.y1}
           x2={axis.x2}
           y2={axis.y2}
-          stroke="rgba(255,255,255,0.1)"
+          stroke="rgba(76, 29, 149, 0.2)"
           strokeWidth="1"
         />
       ))}
 
-      {/* Data area */}
+      {/* Data area — accent green */}
       <polygon
         points={dataPath}
         fill="rgba(16, 185, 129, 0.2)"
@@ -119,7 +119,8 @@ export default function RadarChart({ levels, size = 300, className = '' }: Radar
           y={label.y}
           textAnchor="middle"
           dominantBaseline="middle"
-          className="fill-zinc-400 text-[8px]"
+          className="text-[8px]"
+          fill="#94A3B8"
         >
           {label.text}
         </text>

@@ -3,7 +3,7 @@
 import { useState, useCallback, useMemo, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { questions, specialQuestions, type Question } from '@/data/questions';
-import { encodeResult } from '@/data/scoring';
+import { encodeResult, computeResult, encodeShareUrl } from '@/data/scoring';
 
 function shuffle<T>(array: T[]): T[] {
   const arr = [...array];
@@ -96,8 +96,9 @@ export default function TestPage() {
 
   const handleSubmit = useCallback(() => {
     if (!allAnswered) return;
-    const encoded = encodeResult(answers);
-    router.push(`/sbti/result?d=${encoded}`);
+    const result = computeResult(answers);
+    const shareCode = encodeShareUrl(result);
+    router.push(`/sbti/result?r=${encodeURIComponent(shareCode)}`);
   }, [allAnswered, answers, router]);
 
   const handleBack = useCallback(() => {
@@ -116,31 +117,34 @@ export default function TestPage() {
         : '';
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#0a0a0a]">
+    <div className="min-h-dvh flex flex-col bg-background">
       {/* Top bar */}
-      <div className="sticky top-0 z-50 bg-[#0a0a0a]/80 backdrop-blur-xl border-b border-zinc-800/50">
+      <div className="sticky top-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border/30">
         <div className="max-w-2xl mx-auto px-4 py-3">
           <div className="flex items-center justify-between mb-2">
             <button
               onClick={handleBack}
               disabled={currentIndex === 0}
-              className="text-sm text-zinc-400 hover:text-zinc-200 disabled:opacity-30 disabled:cursor-not-allowed transition-colors flex items-center gap-1"
+              className="text-sm text-muted-foreground hover:text-foreground disabled:opacity-30 disabled:cursor-not-allowed transition-colors flex items-center gap-1 min-h-[44px] min-w-[44px] justify-center"
             >
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
               </svg>
               上一题
             </button>
-            <span className="text-sm text-zinc-400 font-mono">
+            <span className="text-sm text-muted-foreground font-mono">
               {currentIndex + 1} / {totalQuestions}
             </span>
-            <span className="text-sm text-zinc-500">{Math.round(progress)}%</span>
+            <span className="text-sm text-secondary font-medium">{Math.round(progress)}%</span>
           </div>
-          {/* Progress bar */}
-          <div className="h-1 bg-zinc-800 rounded-full overflow-hidden">
+          {/* Progress bar with glow */}
+          <div className="h-1.5 bg-muted rounded-full overflow-hidden relative">
             <div
               className="h-full progress-shimmer rounded-full transition-all duration-500 ease-out"
-              style={{ width: `${progress}%` }}
+              style={{
+                width: `${progress}%`,
+                boxShadow: '0 0 10px rgba(124, 58, 237, 0.5), 0 0 20px rgba(124, 58, 237, 0.2)',
+              }}
             />
           </div>
         </div>
@@ -150,19 +154,19 @@ export default function TestPage() {
       <div className="flex-1 flex flex-col items-center justify-center px-4 py-8">
         <div className={`w-full max-w-2xl ${animClass}`}>
           {/* Question badge */}
-          <div className="flex items-center gap-2 mb-4">
-            <span className="text-xs px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">
+          <div className="flex items-center gap-2 mb-5">
+            <span className="text-xs px-3 py-1 rounded-full bg-primary/10 text-primary border border-primary/20 font-medium">
               第 {currentIndex + 1} 题
             </span>
             {currentQuestion.special && (
-              <span className="text-xs px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-500 border border-amber-500/20">
+              <span className="text-xs px-3 py-1 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20 font-medium">
                 补充题
               </span>
             )}
           </div>
 
           {/* Question text */}
-          <h2 className="text-lg md:text-xl font-medium text-zinc-100 leading-relaxed mb-8">
+          <h2 className="text-xl md:text-2xl font-semibold text-foreground leading-relaxed mb-10">
             {currentQuestion.text}
           </h2>
 
@@ -176,19 +180,19 @@ export default function TestPage() {
                 <button
                   key={i}
                   onClick={() => handleSelect(currentQuestion.id, opt.value)}
-                  className={`w-full flex items-start gap-3 p-4 rounded-xl border transition-all duration-200 text-left min-h-[48px]
+                  className={`w-full flex items-start gap-3 p-4 rounded-xl border transition-all duration-200 text-left min-h-[48px] btn-press
                     ${
                       isSelected
-                        ? 'border-emerald-500/50 bg-emerald-500/10 text-emerald-100'
-                        : 'border-zinc-800 bg-zinc-900/30 hover:border-zinc-600 hover:bg-zinc-800/50 text-zinc-300'
+                        ? 'border-primary/60 bg-primary/10 text-foreground shadow-[0_0_15px_rgba(124,58,237,0.2)]'
+                        : 'border-border/30 bg-card/30 hover:border-primary/30 hover:bg-card/50 text-card-foreground'
                     }`}
                 >
                   <span
                     className={`flex-shrink-0 w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold transition-colors
                       ${
                         isSelected
-                          ? 'bg-emerald-500 text-white'
-                          : 'bg-zinc-800 text-zinc-400'
+                          ? 'bg-primary text-white'
+                          : 'bg-muted text-muted-foreground'
                       }`}
                   >
                     {optionCode}
@@ -203,11 +207,11 @@ export default function TestPage() {
 
       {/* Bottom submit */}
       {allAnswered && (
-        <div className="sticky bottom-0 bg-[#0a0a0a]/80 backdrop-blur-xl border-t border-zinc-800/50 p-4 animate-fade-in-up">
+        <div className="sticky bottom-0 bg-background/80 backdrop-blur-xl border-t border-border/30 p-4 animate-fade-in-up">
           <div className="max-w-2xl mx-auto">
             <button
               onClick={handleSubmit}
-              className="w-full py-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-lg transition-all duration-300 glow-accent"
+              className="w-full py-4 rounded-xl bg-gradient-to-r from-primary to-secondary text-white font-semibold text-lg transition-all duration-300 glow-primary btn-press"
             >
               查看我的人格结果
             </button>

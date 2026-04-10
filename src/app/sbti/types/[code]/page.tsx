@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
-import { TYPE_LIBRARY, TYPE_IMAGES, NORMAL_TYPES, getAllTypeCodes, slugToCode } from '@/data/types';
+import { TYPE_LIBRARY, TYPE_IMAGES, NORMAL_TYPES, getAllTypeCodes, slugToCode, DEFAULT_THEME } from '@/data/types';
 import { dimensionOrder, dimensionMeta, DIM_EXPLANATIONS } from '@/data/dimensions';
 import PatternViz from '@/components/PatternViz';
 import Footer from '@/components/Footer';
@@ -47,22 +47,23 @@ export default async function TypeDetailPage({
 
   const normalType = NORMAL_TYPES.find((t) => t.code === code);
   const imageUrl = TYPE_IMAGES[code];
+  const theme = type.theme ?? DEFAULT_THEME;
   const pattern = normalType?.pattern;
   const patternLevels = pattern ? pattern.replace(/-/g, '').split('') : null;
 
   const levelColorClass: Record<string, string> = {
     L: 'text-blue-400 bg-blue-500/10 border-blue-500/20',
-    M: 'text-yellow-400 bg-yellow-500/10 border-yellow-500/20',
-    H: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20',
+    M: 'text-amber-400 bg-amber-500/10 border-amber-500/20',
+    H: 'text-accent bg-accent/10 border-accent/20',
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <div className="px-4 pt-8 pb-4">
+    <div className="min-h-dvh flex flex-col">
+      <div className="px-4 pt-10 pb-4">
         <div className="max-w-2xl mx-auto">
           <Link
             href="/sbti/types"
-            className="inline-flex items-center gap-1 text-sm text-zinc-500 hover:text-zinc-300 transition-colors mb-6"
+            className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors mb-8 min-h-[44px]"
           >
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
@@ -73,10 +74,15 @@ export default async function TypeDetailPage({
       </div>
 
       {/* Hero */}
-      <section className="px-4 pb-8 text-center">
-        <div className="max-w-2xl mx-auto">
+      <section className="relative px-4 pb-10 text-center overflow-hidden">
+        <div
+          className="absolute top-[-100px] left-1/2 -translate-x-1/2 w-[400px] h-[400px] rounded-full blur-[120px] pointer-events-none"
+          style={{ background: theme.glow }}
+        />
+
+        <div className="relative z-10 max-w-2xl mx-auto">
           {imageUrl && (
-            <div className="mb-4 flex justify-center">
+            <div className="mb-5 flex justify-center">
               <Image
                 src={imageUrl}
                 alt={type.code}
@@ -88,31 +94,36 @@ export default async function TypeDetailPage({
             </div>
           )}
 
-          <h1 className="text-4xl md:text-5xl font-black mb-2">
-            <span className="gradient-text">{type.code}</span>
+          <h1 className="font-display text-5xl md:text-6xl mb-3">
+            <span
+              className="bg-clip-text text-transparent"
+              style={{ backgroundImage: `linear-gradient(135deg, ${theme.gradientFrom}, ${theme.gradientTo})` }}
+            >
+              {type.code}
+            </span>
           </h1>
-          <h2 className="text-2xl font-bold text-zinc-200 mb-3">{type.cn}</h2>
-          <p className="text-emerald-400 italic text-lg">&ldquo;{type.intro}&rdquo;</p>
+          <h2 className="font-display text-2xl text-foreground mb-4">{type.cn}</h2>
+          <p className="italic text-lg" style={{ color: theme.accent }}>&ldquo;{type.intro}&rdquo;</p>
         </div>
       </section>
 
       {/* Description */}
-      <section className="px-4 pb-8">
+      <section className="px-4 pb-10">
         <div className="max-w-2xl mx-auto">
-          <div className="p-5 rounded-xl bg-zinc-900/50 border border-zinc-800/50">
-            <p className="text-sm text-zinc-300 leading-relaxed">{type.desc}</p>
+          <div className="p-6 rounded-xl bg-card/50 border border-border/30">
+            <p className="text-sm text-card-foreground leading-relaxed">{type.desc}</p>
           </div>
         </div>
       </section>
 
       {/* Standard pattern */}
       {pattern && patternLevels && (
-        <section className="px-4 pb-8">
+        <section className="px-4 pb-10">
           <div className="max-w-2xl mx-auto">
-            <h3 className="text-lg font-bold text-zinc-200 mb-4">标准 15 维 Pattern</h3>
-            <div className="p-4 rounded-xl bg-zinc-900/50 border border-zinc-800/50">
-              <div className="text-center mb-4">
-                <code className="text-emerald-400 font-mono text-sm">{pattern}</code>
+            <h3 className="font-display text-xl text-foreground mb-5">标准 15 维 Pattern</h3>
+            <div className="p-5 rounded-xl bg-card/50 border border-border/30">
+              <div className="text-center mb-5">
+                <code className="text-primary font-mono text-sm">{pattern}</code>
               </div>
               <div className="space-y-2">
                 {dimensionOrder.map((dim, i) => {
@@ -123,17 +134,17 @@ export default async function TypeDetailPage({
                   return (
                     <div
                       key={dim}
-                      className="flex items-start gap-3 py-2 border-b border-zinc-800/30 last:border-0"
+                      className="flex items-start gap-3 py-2.5 border-b border-border/20 last:border-0"
                     >
-                      <span className="text-xs text-zinc-500 w-28 flex-shrink-0 pt-0.5">
+                      <span className="text-xs text-muted-foreground w-28 flex-shrink-0 pt-0.5">
                         {meta.name}
                       </span>
                       <span
-                        className={`text-xs px-2 py-0.5 rounded-full border font-mono font-bold flex-shrink-0 ${levelColorClass[level]}`}
+                        className={`text-xs px-2.5 py-0.5 rounded-full border font-mono font-bold flex-shrink-0 ${levelColorClass[level]}`}
                       >
                         {level}
                       </span>
-                      <span className="text-xs text-zinc-500 leading-relaxed">{explanation}</span>
+                      <span className="text-xs text-muted-foreground leading-relaxed">{explanation}</span>
                     </div>
                   );
                 })}
@@ -144,11 +155,11 @@ export default async function TypeDetailPage({
       )}
 
       {/* CTA */}
-      <section className="px-4 py-8 text-center border-t border-zinc-800/50">
-        <p className="text-zinc-400 mb-4">你也是{type.cn}吗？去测测看</p>
+      <section className="px-4 py-10 text-center border-t border-border/30">
+        <p className="text-muted-foreground mb-5">你也是{type.cn}吗？去测测看</p>
         <Link
           href="/sbti/test"
-          className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold transition-colors"
+          className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-primary to-secondary text-white font-semibold transition-all duration-300 hover:scale-105 glow-primary btn-press min-h-[48px]"
         >
           开始测试
         </Link>
