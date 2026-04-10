@@ -35,7 +35,7 @@ const SharePoster = forwardRef<HTMLDivElement, SharePosterProps>(
           errorCorrectionLevel: 'M',
         }).then(setQrDataUrl);
       });
-    }, []);
+    }, [shareUrl]);
 
     return (
       <div style={{ position: 'absolute', left: 0, top: 0, width: 0, height: 0, overflow: 'hidden', pointerEvents: 'none' }} aria-hidden="true">
