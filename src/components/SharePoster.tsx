@@ -23,11 +23,22 @@ interface SharePosterProps {
 const SharePoster = forwardRef<HTMLDivElement, SharePosterProps>(
   ({ finalType, badge, imageUrl, theme: themeProp, shareUrl }, ref) => {
     const theme = themeProp ?? finalType.theme ?? DEFAULT_THEME;
-    // html-to-image needs absolute URL for images
-    const absImageUrl = imageUrl && typeof window !== 'undefined'
-      ? new URL(imageUrl, window.location.origin).href
-      : imageUrl;
+    const [imgBase64, setImgBase64] = useState<string | null>(null);
     const [qrDataUrl, setQrDataUrl] = useState<string | null>(null);
+
+    // Pre-load character image as base64 (html-to-image can't render external URLs)
+    useEffect(() => {
+      if (!imageUrl) return;
+      const url = new URL(imageUrl, window.location.origin).href;
+      fetch(url)
+        .then(res => res.blob())
+        .then(blob => {
+          const reader = new FileReader();
+          reader.onloadend = () => setImgBase64(reader.result as string);
+          reader.readAsDataURL(blob);
+        })
+        .catch(() => {});
+    }, [imageUrl]);
 
     useEffect(() => {
       const base = shareUrl || 'https://maaker.cn/sbti';
@@ -106,7 +117,7 @@ const SharePoster = forwardRef<HTMLDivElement, SharePosterProps>(
         </div>
 
         {/* Character image — the visual hero */}
-        {absImageUrl && (
+        {imgBase64 && (
           <div style={{ marginTop: 24, position: 'relative' }}>
             {/* Glow ring behind image */}
             <div
@@ -123,7 +134,7 @@ const SharePoster = forwardRef<HTMLDivElement, SharePosterProps>(
             />
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src={absImageUrl}
+              src={imgBase64}
               alt={finalType.code}
               width={200}
               height={200}
@@ -139,7 +150,7 @@ const SharePoster = forwardRef<HTMLDivElement, SharePosterProps>(
         {/* Type code — big, gradient, unmissable */}
         <div
           style={{
-            marginTop: absImageUrl ? 24 : 60,
+            marginTop: imgBase64 ? 24 : 60,
             fontSize: 56,
             fontWeight: 900,
             fontFamily: "'Righteous', 'Poppins', sans-serif",
