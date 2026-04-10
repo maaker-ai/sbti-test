@@ -41,6 +41,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="zh-CN">
+      <head>
+        <script
+          defer
+          src="https://analytics.maaker.cn/script.js"
+          data-website-id="da5ebb64-c418-44c2-baa8-0f0788549b41"
+        />
+      </head>
       <body className="min-h-dvh bg-background text-foreground antialiased">
         {children}
       </body>
