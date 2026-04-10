@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import Image from 'next/image';
-import { TYPE_LIBRARY, TYPE_IMAGES, TYPE_GROUPS } from '@/data/types';
+import { TYPE_LIBRARY, TYPE_IMAGES, TYPE_THUMBS, TYPE_GROUPS } from '@/data/types';
 import Footer from '@/components/Footer';
 
 export const metadata: Metadata = {
@@ -50,7 +50,7 @@ export default function SBTIHome() {
 
   // Hero avatar showcase — pick 8 types that have images
   const avatarCodes = ['CTRL', 'SEXY', 'JOKE-R', 'BOSS', 'DEAD', 'GOGO', 'MUM', 'DRUNK'];
-  const avatarTypes = avatarCodes.filter((c) => TYPE_IMAGES[c]);
+  const avatarTypes = avatarCodes.filter((c) => TYPE_THUMBS[c]);
 
   return (
     <div className="min-h-dvh flex flex-col">
@@ -92,7 +92,7 @@ export default function SBTIHome() {
                   style={{ zIndex: avatarTypes.length - i }}
                 >
                   <Image
-                    src={TYPE_IMAGES[code]}
+                    src={TYPE_THUMBS[code]}
                     alt={TYPE_LIBRARY[code]?.cn || code}
                     width={48}
                     height={48}
@@ -147,7 +147,7 @@ export default function SBTIHome() {
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
             {previewTypes.map((type) => {
-              const hasImage = TYPE_IMAGES[type.code];
+              const hasImage = TYPE_THUMBS[type.code];
               return (
                 <Link
                   key={type.code}
@@ -171,7 +171,7 @@ export default function SBTIHome() {
                       style={{ boxShadow: `0 0 0 2px var(--card), 0 0 0 4px ${type.theme.accent}` }}
                     >
                       <Image
-                        src={TYPE_IMAGES[type.code]}
+                        src={TYPE_THUMBS[type.code]}
                         alt={type.cn}
                         width={80}
                         height={80}

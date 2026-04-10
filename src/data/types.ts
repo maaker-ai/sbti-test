@@ -247,6 +247,11 @@ export const TYPE_IMAGES: Record<string, string> = {
   IMFW: '/images/IMFW.png',
 };
 
+// 128px thumbnails for list/avatar use (4-6KB each vs 500KB originals)
+export const TYPE_THUMBS: Record<string, string> = Object.fromEntries(
+  Object.entries(TYPE_IMAGES).map(([k, v]) => [k, v.replace('/images/', '/images/thumb/')])
+);
+
 export const NORMAL_TYPES: NormalType[] = [
   { code: 'CTRL', pattern: 'HHH-HMH-MHH-HHH-MHM' },
   { code: 'ATM-er', pattern: 'HHH-HHM-HHH-HMH-MHL' },
