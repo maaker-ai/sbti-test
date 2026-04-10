@@ -1,7 +1,7 @@
 'use client';
 
 import { useSearchParams } from 'next/navigation';
-import { Suspense, useMemo, useRef, useCallback, useState } from 'react';
+import { Suspense, useMemo, useRef, useCallback, useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import {
@@ -22,6 +22,11 @@ function ResultContent() {
   const encoded = searchParams.get('d');
   const posterRef = useRef<HTMLDivElement>(null);
   const [posterGenerating, setPosterGenerating] = useState(false);
+  const [currentUrl, setCurrentUrl] = useState('');
+
+  useEffect(() => {
+    setCurrentUrl(window.location.href);
+  }, []);
 
   const shareEncoded = searchParams.get('r');
 
@@ -102,6 +107,7 @@ function ResultContent() {
         rawScores={rawScores}
         imageUrl={imageUrl}
         theme={theme}
+        shareUrl={currentUrl}
       />
 
       {/* Page content */}
@@ -276,17 +282,17 @@ function ResultContent() {
 
       {/* Bottom nav */}
       <section className="px-4 py-8 border-t border-border/30">
-        <div className="max-w-lg mx-auto flex gap-3">
+        <div className="max-w-lg mx-auto space-y-3">
           <Link
             href="/sbti/test"
-            className="flex-1 py-3 rounded-xl border border-border/30 hover:border-border/50 text-muted-foreground text-sm font-medium transition-colors flex items-center justify-center min-h-[44px]"
+            className="w-full py-3 rounded-xl border border-border/30 hover:border-border/50 text-muted-foreground text-sm font-medium transition-colors flex items-center justify-center min-h-[44px]"
           >
             重新测试
           </Link>
 
           <Link
             href="/sbti/types"
-            className="w-full py-3.5 rounded-xl text-muted-foreground/70 hover:text-muted-foreground font-medium transition-colors flex items-center justify-center gap-1 text-sm min-h-[44px]"
+            className="w-full py-3 rounded-xl text-muted-foreground/70 hover:text-muted-foreground text-sm font-medium transition-colors flex items-center justify-center min-h-[44px]"
           >
             查看全部 26 种人格
           </Link>

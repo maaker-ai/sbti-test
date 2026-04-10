@@ -12,6 +12,7 @@ interface SharePosterProps {
   rawScores: Record<string, number>;
   imageUrl?: string;
   theme?: PersonalityTheme;
+  shareUrl?: string;
 }
 
 /**
@@ -20,13 +21,14 @@ interface SharePosterProps {
  * Fixed 440x780, all inline styles to avoid Tailwind oklab issues with html-to-image.
  */
 const SharePoster = forwardRef<HTMLDivElement, SharePosterProps>(
-  ({ finalType, badge, imageUrl, theme: themeProp }, ref) => {
+  ({ finalType, badge, imageUrl, theme: themeProp, shareUrl }, ref) => {
     const theme = themeProp ?? finalType.theme ?? DEFAULT_THEME;
     const [qrDataUrl, setQrDataUrl] = useState<string | null>(null);
 
     useEffect(() => {
+      const qrTarget = shareUrl || 'https://maaker.cn/sbti';
       import('qrcode').then((QRCode) => {
-        QRCode.toDataURL('https://maaker.cn/sbti', {
+        QRCode.toDataURL(qrTarget, {
           width: 80,
           margin: 1,
           color: { dark: '#E2E8F0', light: '#00000000' },
@@ -207,13 +209,9 @@ const SharePoster = forwardRef<HTMLDivElement, SharePosterProps>(
             textAlign: 'center',
             lineHeight: 1.9,
             position: 'relative',
-            display: '-webkit-box',
-            WebkitLineClamp: 6,
-            WebkitBoxOrient: 'vertical',
-            overflow: 'hidden',
           }}
         >
-          {finalType.desc}
+          {finalType.desc.length > 150 ? finalType.desc.slice(0, 150) + '......' : finalType.desc}
         </div>
 
         {/* Spacer */}
