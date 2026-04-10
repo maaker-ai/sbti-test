@@ -23,6 +23,7 @@ function ResultContent() {
   const isFromShare = searchParams.get('from') === 'share';
   const posterRef = useRef<HTMLDivElement>(null);
   const [posterGenerating, setPosterGenerating] = useState(false);
+  const [toast, setToast] = useState('');
   const [currentUrl, setCurrentUrl] = useState('');
 
   useEffect(() => {
@@ -45,6 +46,11 @@ function ResultContent() {
     return null;
   }, [encoded, shareEncoded]);
 
+  const showToast = useCallback((msg: string) => {
+    setToast(msg);
+    setTimeout(() => setToast(''), 2500);
+  }, []);
+
   const generatePoster = useCallback(async () => {
     if (!posterRef.current || posterGenerating) return;
     setPosterGenerating(true);
@@ -62,6 +68,7 @@ function ResultContent() {
       // iOS/mobile: use Web Share API if available (saves to photos / share to apps)
       if (navigator.share && navigator.canShare?.({ files: [file] })) {
         await navigator.share({ files: [file], title: `SBTI - ${result?.finalType.code}` });
+        showToast('分享成功');
       } else {
         // Desktop fallback: download
         const url = URL.createObjectURL(blob);
@@ -70,6 +77,7 @@ function ResultContent() {
         link.href = url;
         link.click();
         URL.revokeObjectURL(url);
+        showToast('海报已保存');
       }
     } catch (e) {
       // User cancelled share is not an error
@@ -84,7 +92,7 @@ function ResultContent() {
   const copyShareLink = useCallback(() => {
     const url = window.location.href;
     navigator.clipboard.writeText(url).then(() => {
-      alert('链接已复制到剪贴板');
+      showToast('链接已复制');
     });
   }, []);
 
@@ -359,6 +367,13 @@ function ResultContent() {
 
       <div className="flex-1" />
       <Footer />
+
+      {/* Toast */}
+      {toast && (
+        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[100] px-5 py-2.5 rounded-xl bg-card/95 border border-border/50 text-sm text-foreground backdrop-blur-xl shadow-lg animate-fade-in-up">
+          {toast}
+        </div>
+      )}
     </div>
   );
 }
