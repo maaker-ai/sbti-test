@@ -73,9 +73,13 @@ function ResultContent() {
         showToast('分享成功');
       }
       // Strategy 2: Mobile without share API (WeChat, QQ, etc.) → show image overlay for long-press save
+      // Must use base64 data URL, not blob URL — WeChat can't save blob URLs
       else if (/Mobile|Android/i.test(navigator.userAgent)) {
-        const dataUrl = URL.createObjectURL(blob);
-        setPosterPreview(dataUrl);
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setPosterPreview(reader.result as string);
+        };
+        reader.readAsDataURL(blob);
       }
       // Strategy 3: Desktop → download file
       else {
@@ -380,7 +384,7 @@ function ResultContent() {
       {posterPreview && (
         <div
           className="fixed inset-0 z-[200] bg-black/90 flex flex-col items-center justify-center p-6"
-          onClick={() => { URL.revokeObjectURL(posterPreview); setPosterPreview(''); }}
+          onClick={() => setPosterPreview('')}
         >
           <p className="text-white/80 text-sm mb-4">长按图片保存到相册</p>
           {/* eslint-disable-next-line @next/next/no-img-element */}
