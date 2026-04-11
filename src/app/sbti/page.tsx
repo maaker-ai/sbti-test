@@ -52,28 +52,34 @@ const ModelIcons = {
   ),
 };
 
-const jsonLd = {
+const websiteSchema = {
   '@context': 'https://schema.org',
   '@type': 'WebSite',
   name: 'SBTI 人格测试',
+  alternateName: 'Super Bullshit Type Indicator',
   url: 'https://maaker.cn/sbti',
-  description: '15个维度、26种人格、30道题 — 用最离谱的方式揭示你最真实的人格画像。',
+  inLanguage: 'zh-CN',
+  description:
+    '15个维度、26种人格、30道题 — 用最离谱的方式揭示你最真实的人格画像。SBTI（Super Bullshit Type Indicator）比 MBTI 更有趣的人格测试。',
+  publisher: {
+    '@type': 'Organization',
+    name: 'Maaker.AI',
+    url: 'https://maaker.cn',
+  },
 };
 
-const quizJsonLd = {
+const quizSchema = {
   '@context': 'https://schema.org',
   '@type': 'Quiz',
   name: 'SBTI 人格测试',
-  description: '基于 5 大模型、15 个维度的人格测试，30道题揭示你的隐藏人格。',
-  educationalAlignment: {
-    '@type': 'AlignmentObject',
-    alignmentType: 'educationalSubject',
-    targetName: '人格心理学',
-  },
+  url: 'https://maaker.cn/sbti',
   about: {
     '@type': 'Thing',
-    name: '人格类型测试',
+    name: '人格测试',
   },
+  educationalLevel: 'Entertainment',
+  numberOfQuestions: 30,
+  inLanguage: 'zh-CN',
 };
 
 export default function SBTIHome() {
@@ -89,11 +95,9 @@ export default function SBTIHome() {
     <div className="min-h-dvh flex flex-col">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(quizJsonLd) }}
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify([websiteSchema, quizSchema]),
+        }}
       />
       {/* Hero */}
       <section className="relative flex flex-col items-center justify-center px-6 pt-28 pb-24 text-center overflow-hidden noise-bg">
