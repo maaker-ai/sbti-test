@@ -59,9 +59,20 @@ Any change to pattern format, dimension order, or special-type logic must keep b
 - `SharePoster.tsx` — offscreen DOM node rendered to PNG via `html-to-image` for the shareable poster. **Known fragility**: `html-to-image` needs images pre-loaded as base64 and the node temporarily visible during capture — see recent fix commits (`8f26d6e`, `f23e3f4`, `102d286`). Don't revert those workarounds without testing iOS Safari poster generation.
 - `Footer.tsx`, favicon at `public/favicon.ico` (see commit `2943aa2`).
 
+## SEO
+
+- **Google Search Console** verified for `maaker.cn` (DNS domain property, account: `tucao.art@gmail.com`).
+- **Sitemap** at `public/sitemap.xml` — 28 URLs (landing + types listing + 26 individual types). Submitted to GSC.
+- **robots.txt** blocks `/sbti/test` and `/sbti/result` (interactive client pages, no SEO value).
+- **Structured data**: JSON-LD on landing (WebSite + Quiz), types listing (ItemList + BreadcrumbList), and each type detail page (Article + BreadcrumbList).
+- **Meta tags**: Root layout sets default title template `%s | SBTI 人格测试`. Each type detail page generates its own metadata via `generateMetadata`.
+- **Font loading**: `preconnect` to Google Fonts in `layout.tsx` — improves Googlebot rendering. Google still reports some font/image resources as "couldn't load" which is expected for external resources.
+- When adding new types: update `sitemap.xml`, ensure `generateStaticParams` picks them up, and they'll auto-get structured data from the `[code]/page.tsx` template.
+
 ## Gotchas
 
 - **Static export**: don't add `route.ts`, server actions, `revalidate`, or anything that needs a Node runtime at request time. It will break `next build`.
 - **Share URL format is load-bearing**: `https://maaker.cn/sbti/result?d=<encoded>` links are distributed — keep `decodeShareUrl` backwards compatible.
 - **Tailwind v4**: no `tailwind.config.ts`. Add tokens via `@theme` in `src/app/globals.css`.
 - **Client vs server components**: `/sbti` landing is a server component (has `metadata` export). Anything using `useSearchParams`/`useState` must be `'use client'` and, for search params, wrapped in `<Suspense>`.
+- **Deployment**: static files in `out/` are served via nginx on the production server. After `npm run build`, the `out/` directory needs to be deployed. The site lives under the `/sbti` path on `maaker.cn`.
