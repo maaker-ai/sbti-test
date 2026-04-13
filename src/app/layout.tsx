@@ -42,6 +42,13 @@ export default function RootLayout({
   return (
     <html lang="zh-CN">
       <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          rel="preload"
+          href="https://fonts.googleapis.com/css2?family=Righteous&family=Poppins:wght@300;400;500;600;700&display=swap"
+          as="style"
+        />
         <script
           defer
           src="https://analytics.maaker.cn/script.js"

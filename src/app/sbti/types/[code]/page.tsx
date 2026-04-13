@@ -89,11 +89,21 @@ export default async function TypeDetailPage({
     },
   };
 
+  const breadcrumbJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'SBTI 人格测试', item: 'https://maaker.cn/sbti' },
+      { '@type': 'ListItem', position: 2, name: '26种人格类型', item: 'https://maaker.cn/sbti/types' },
+      { '@type': 'ListItem', position: 3, name: `${type.code}（${type.cn}）`, item: `https://maaker.cn/sbti/types/${encodeURIComponent(type.code)}` },
+    ],
+  };
+
   return (
     <div className="min-h-dvh flex flex-col">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify([articleJsonLd, breadcrumbJsonLd]) }}
       />
       <div className="px-4 pt-10 pb-4">
         <div className="max-w-2xl mx-auto">

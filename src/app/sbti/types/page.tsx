@@ -5,20 +5,54 @@ import Footer from '@/components/Footer';
 
 export const metadata: Metadata = {
   title: '26种人格类型总览',
-  description: '探索 SBTI 的 26 种独特人格类型 — 拿捏者、酒鬼、小丑、尤物、死者...找到属于你的那一个。',
+  description: '探索 SBTI 的 26 种独特人格类型 — 拿捏者、酒鬼、小丑、尤物、死者...找到属于你的那一个。15个维度解析每种人格的独特画像。',
   openGraph: {
     title: 'SBTI 26种人格类型总览',
     description: '探索 SBTI 的 26 种独特人格类型 — 拿捏者、酒鬼、小丑、尤物、死者...找到属于你的那一个。',
     url: 'https://maaker.cn/sbti/types',
+    images: [{ url: '/images/CTRL.png', width: 1024, height: 1024, alt: 'SBTI 26种人格类型' }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'SBTI 26种人格类型总览',
+    description: '探索 SBTI 的 26 种独特人格类型 — 拿捏者、酒鬼、小丑、尤物、死者...找到属于你的那一个。',
+    images: ['/images/CTRL.png'],
   },
   alternates: {
     canonical: 'https://maaker.cn/sbti/types',
   },
 };
 
+const itemListSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'ItemList',
+  name: 'SBTI 26种人格类型',
+  description: '探索 SBTI 的 26 种独特人格类型',
+  numberOfItems: Object.keys(TYPE_LIBRARY).length,
+  itemListElement: Object.values(TYPE_LIBRARY).map((type, i) => ({
+    '@type': 'ListItem',
+    position: i + 1,
+    name: `${type.code}（${type.cn}）`,
+    url: `https://maaker.cn/sbti/types/${encodeURIComponent(type.code)}`,
+  })),
+};
+
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'SBTI 人格测试', item: 'https://maaker.cn/sbti' },
+    { '@type': 'ListItem', position: 2, name: '26种人格类型', item: 'https://maaker.cn/sbti/types' },
+  ],
+};
+
 export default function TypesPage() {
   return (
     <div className="min-h-dvh flex flex-col">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify([itemListSchema, breadcrumbSchema]) }}
+      />
       {/* Header */}
       <div className="px-4 pt-10 pb-6">
         <div className="max-w-4xl mx-auto">
