@@ -9,12 +9,15 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Commands
 
 ```bash
-npm run dev      # next dev (localhost:3000, redirects / → /sbti)
-npm run build    # next build → static export in out/
-npm run start    # next start (not used in prod — site is static)
+npm run dev                    # local dev (localhost:3000, redirects / → /sbti)
+npm run build                  # build → static export in out/
+./scripts/deploy-staging.sh    # build + rsync to https://staging.maaker.cn (any branch)
+./scripts/deploy-prod.sh       # build + rsync to https://maaker.cn (main branch only, clean tree required)
 ```
 
 No test or lint scripts configured. Next.js built-in ESLint runs during `build`.
+
+**Rule**: never run `deploy-prod.sh` without first deploying the same commit to staging and eyeballing it in the browser. There are real users on `maaker.cn`. See Gotchas → Deployment for the full workflow.
 
 ## Stack Notes
 
