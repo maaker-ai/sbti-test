@@ -11,11 +11,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ```bash
 npm run dev                    # local dev (localhost:3000, redirects / → /sbti)
 npm run build                  # build → static export in out/
-./scripts/deploy-staging.sh    # build + rsync to https://staging.maaker.cn (any branch)
-./scripts/deploy-prod.sh       # build + rsync to https://maaker.cn (main branch only, clean tree required)
+npm run test:e2e               # Playwright E2E — full test flow + counter assertions (~47s, Chromium only)
+npx playwright test tests/poster-counter.spec.ts --headed   # watch it run
+./scripts/deploy-staging.sh    # build + rsync to https://staging.maaker.cn (any branch, injects NEXT_PUBLIC_SBTI_SCHEMA=sbti_staging)
+./scripts/deploy-prod.sh       # build + rsync to https://maaker.cn (main branch only, clean tree required, injects NEXT_PUBLIC_SBTI_SCHEMA=sbti)
 ```
 
-No test or lint scripts configured. Next.js built-in ESLint runs during `build`.
+Next.js built-in ESLint runs during `build`. No unit-test framework.
 
 **Rule**: never run `deploy-prod.sh` without first deploying the same commit to staging and eyeballing it in the browser. There are real users on `maaker.cn`. See Gotchas → Deployment for the full workflow.
 
@@ -49,16 +51,44 @@ Any change to pattern format, dimension order, or special-type logic must keep b
 
 ### Routes (`src/app/`)
 - `/` → redirects to `/sbti`.
-- `/sbti` — landing page (server component, has `metadata`/OG tags).
-- `/sbti/test` — the quiz (client, holds answer state).
-- `/sbti/result` — renders result; reads `?d=` (share URL format) or falls back to recomputing from stored answers. `from=share` branch skips the "your result" framing. Wrapped in `<Suspense>` because it uses `useSearchParams`.
+- `/sbti` — landing page (server component, has `metadata`/OG tags). Hosts `<VisitorCount />` (total-count pull from Supabase).
+- `/sbti/test` — the quiz (client, holds answer state). **On last answer, auto-advances to `/sbti/result`** (no user confirmation button) with a full-screen "生成你的人格档案..." loading overlay covering the RPC round-trip. Old sticky submit button is retained as a safety net.
+- `/sbti/result` — renders result; reads `?r=` (compact share URL format) or legacy `?d=` (base64). On mount, reads `sessionStorage['sbti:completion']` for the patient counter badges; receiver path (`from=share`) skips this read. Wrapped in `<Suspense>` because it uses `useSearchParams`.
 - `/sbti/types` — type library browser, with sub-route `/sbti/types/[code]` for individual types.
+
+### Poster counter feature
+
+Every completion gets **two numbers** stamped onto the share poster and shown on-screen on the result page:
+- **Global**: `SBTI Bullshit 病历档案 · No.XXXX` at the top (from `sbti.counter_global`, 4-digit padded)
+- **Per-type rubber stamp** bottom-right: `第 N 位 {CODE}型 患者 · YYYY.MM.DD 确诊` (from `sbti.counter_by_type`, rotated/bordered)
+
+Data flow:
+1. `src/app/sbti/test/page.tsx` calls `warmUpSupabase()` on mount (pre-initializes client to avoid cold-start) and `recordCompletion(typeCode)` on submit.
+2. `src/lib/supabase.ts` calls Postgres RPC `sbti.complete(p_type_code)` via `supabase.schema(SCHEMA).rpc(...)` — atomic increment of both counters + insert into `sbti.completions`. Wrapped in 2s `withTimeout`; any failure returns `null` and does **not** block navigation.
+3. `handleSelect` on last answer writes `sessionStorage['sbti:completion'] = { globalId, typeId, date, typeCode }` then `router.push` to result page.
+4. `SharePoster.tsx` receives `globalId`/`typeId`/`diagnosedAt` props and renders both badges (same strings on-screen + on poster). Missing props → don't render, old `匹配度 XX%` badge always stays.
+5. Landing `<VisitorCount />` polls `sbti.total_count` view once on mount.
+
+The **Supabase instance is `https://api.maaker.cn`** (self-hosted, shared with other Maaker projects). SBTI owns two schemas: `sbti` (prod, seed value `100`) and `sbti_staging` (staging, seed `0`). Schema is selected at build time via `NEXT_PUBLIC_SBTI_SCHEMA` (default `sbti_staging` in `.env.local`, overridden by deploy scripts). Anon key is in `.env.local` (gitignored); see shared credentials note `obsidian:Server/Supabase-自托管-api.maaker.cn.md`.
+
+**Migrations** live in `supabase/migrations/` (filename convention `YYYYMMDDHHMMSS_desc.sql`). The initial migration created the schemas + 3 tables + RPC + view + RLS (anon can only EXECUTE `complete(...)` and SELECT the view). Re-applying migrations manually: `cat <file> | ssh xiaopang@1.15.12.53 "docker compose -f /opt/maaker-supabase/docker-compose.yml exec -T postgres psql -U postgres -d maaker"` — **target DB is `maaker`, not `postgres`**. After schema changes: `NOTIFY pgrst, 'reload schema';`. **Never run `supabase db reset`** — shared instance, it would wipe other projects.
+
+### Share encoding
+`scoring.ts` defines TWO encoding schemes:
+- `encodeResult`/`decodeResult` — base64 of raw answers (used internally).
+- `encodeShareUrl`/`decodeShareUrl` — compact dotted format `CODE.sim.exact.LMH-HMM-....234-342-....[D|H]`. This is what ends up in share URLs (`?r=...`). `decodeShareUrl` must reconstruct a full `TestResult` without access to the original answers, including the special `D`/`H` flag for hidden/fallback types. Patient counter values are **NOT** encoded in the share URL — receivers don't see them.
+
+Any change to pattern format, dimension order, or special-type logic must keep both encoders/decoders in sync, otherwise old share links break.
 
 ### Components (`src/components/`)
 - `RadarChart.tsx` — SVG radar across the 15 dimensions.
 - `PatternViz.tsx` — LMH pattern visualization.
-- `SharePoster.tsx` — offscreen DOM node rendered to PNG via `html-to-image` for the shareable poster. **Known fragility**: `html-to-image` needs images pre-loaded as base64 and the node temporarily visible during capture — see recent fix commits (`8f26d6e`, `f23e3f4`, `102d286`). Don't revert those workarounds without testing iOS Safari poster generation.
+- `SharePoster.tsx` — offscreen DOM node rendered to PNG via `html-to-image` for the shareable poster. **Known fragility**: `html-to-image` needs images pre-loaded as base64 and the node temporarily visible during capture — see recent fix commits (`8f26d6e`, `f23e3f4`, `102d286`). The patient stamp uses `transform: rotate(-6deg)` + `border` + semi-transparent background — a historically risky combo for `html-to-image` on iOS Safari. **Don't revert those workarounds, and any SharePoster change requires iOS Safari real-device testing.**
+- `VisitorCount.tsx` — landing-page `'use client'` widget. Silent failure: renders nothing while loading or on error.
 - `Footer.tsx`, favicon at `public/favicon.ico` (see commit `2943aa2`).
+
+### E2E tests (`tests/`)
+`tests/poster-counter.spec.ts` covers the full user flow: landing → 31 answers → auto-redirect → result page badges → `sessionStorage` check → counter-increment verify. `playwright.config.ts` reuses an existing dev server on :3000. Runs against whatever schema `.env.local` points to (default `sbti_staging`), so each run legitimately bumps the staging counter by 1 — that's fine, don't design around it.
 
 ## SEO
 
@@ -78,10 +108,12 @@ Any change to pattern format, dimension order, or special-type logic must keep b
 
 ## Gotchas
 
-- **Static export**: don't add `route.ts`, server actions, `revalidate`, or anything that needs a Node runtime at request time. It will break `next build`.
-- **Share URL format is load-bearing**: `https://maaker.cn/sbti/result?d=<encoded>` links are distributed — keep `decodeShareUrl` backwards compatible.
+- **Static export**: don't add `route.ts`, server actions, `revalidate`, or anything that needs a Node runtime at request time. It will break `next build`. All backend logic lives in the external Supabase instance.
+- **Share URL format is load-bearing**: `https://maaker.cn/sbti/result?r=<encoded>` (and legacy `?d=<base64>`) links are distributed — keep `decodeShareUrl`/`decodeResult` backwards compatible. Do NOT add patient counter values into share URL params — receivers should never see a personalized counter.
 - **Tailwind v4**: no `tailwind.config.ts`. Add tokens via `@theme` in `src/app/globals.css`.
 - **Client vs server components**: `/sbti` landing is a server component (has `metadata` export). Anything using `useSearchParams`/`useState` must be `'use client'` and, for search params, wrapped in `<Suspense>`.
+- **Supabase cold start**: `recordCompletion` has a 2s timeout. First RPC from a fresh page can take ~500ms (DNS + TLS). `src/app/sbti/test/page.tsx` calls `warmUpSupabase()` in its mount effect so the client is hot before user hits submit. Keep this warm-up call if refactoring test page.
+- **Playwright rate-limit with real RPC**: `npm run test:e2e` consumes one staging counter tick per run, by design. Acceptable for local dev. If integrated into CI later, either mock the client or clear `sbti_staging` counters before each run.
 - **Deployment**: static files in `out/` are served via nginx on the same server (`1.15.12.53`, user `xiaopang`). Two environments, same server:
   - **Production** (`main` branch → `https://maaker.cn`): `./scripts/deploy-prod.sh` → rsync to `/var/www/maaker-cn/`. Script refuses to run from non-main branch or with dirty tree.
   - **Staging** (`staging` branch → `https://staging.maaker.cn`): `./scripts/deploy-staging.sh` → rsync to `/var/www/maaker-cn-staging/`. No branch check — deploys whatever you have checked out.
