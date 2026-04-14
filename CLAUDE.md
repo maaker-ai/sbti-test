@@ -1,12 +1,10 @@
-@AGENTS.md
-
 # CLAUDE.md
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## Project
 
-**SBTI (Super Bullshit Type Indicator)** — a parody personality test deployed at `https://maaker.cn/sbti`. 30 questions → 15 dimensions → matched against 26 personality types. Built as a Next.js 16 static export.
+**SBTI (Super Bullshit Type Indicator)** — a parody personality test deployed at `https://maaker.cn/sbti`. 30 questions → 15 dimensions → matched against 26 personality types. Built as a Next.js 16 static export. See `README.md` for project origin and open-source status.
 
 ## Commands
 
@@ -20,7 +18,7 @@ No test or lint scripts configured. Next.js built-in ESLint runs during `build`.
 
 ## Stack Notes
 
-- **Next.js 16.2.3 / React 19** — AGENTS.md warns this is newer than training data; check `node_modules/next/dist/docs/` before using unfamiliar APIs.
+- **Next.js 16.2.3 / React 19** — newer than most training data. APIs, conventions, and file structure may differ from what you remember. Check `node_modules/next/dist/docs/` before using unfamiliar APIs, and heed deprecation notices.
 - **Static export** (`output: 'export'` in `next.config.ts`, `images.unoptimized: true`). No server code, no API routes, no runtime env vars. Everything must work as static HTML.
 - **Tailwind v4** via `@tailwindcss/postcss` (no `tailwind.config.*`, config lives in `globals.css` via `@theme`).
 
@@ -67,6 +65,12 @@ Any change to pattern format, dimension order, or special-type logic must keep b
 - **Structured data**: JSON-LD on landing (WebSite + Quiz), types listing (ItemList + BreadcrumbList), and each type detail page (Article + BreadcrumbList).
 - **Meta tags**: Root layout sets default title template `%s | SBTI 人格测试`. Each type detail page generates its own metadata via `generateMetadata`.
 - **Font loading**: `preconnect` to Google Fonts in `layout.tsx` — improves Googlebot rendering. Google still reports some font/image resources as "couldn't load" which is expected for external resources.
+- **Baidu**: naturally indexed and shown as `sc_ala` (阿拉丁) rich card for "SBTI 人格测试" queries. Don't casually change the root page title or URL structure — it may disturb existing ranking.
+  - **Verified** on `ziyuan.baidu.com` (personal account "行而不车又又又", 2026-04-14) via file verification. The file `public/baidu_verify_codeva-Zx5vCS3atK.html` (content: `791d4fbb46b3711b4644e2dd6ebe1580`) is also deployed at `/var/www/maaker-cn/` on the server. **Do not delete it** — Baidu re-checks periodically.
+  - Site categories: 工具服务及在线查询 / 信息技术 / 生活和情感 (30-day lock; change from `搜索展现 → 站点属性`).
+  - ICP: `京ICP备2023007401号-13` (company-owned via 腾讯云, rendered in `Footer.tsx:22`).
+  - **TODO (owner action required)**: to unlock sitemap submission and raise daily URL quota, the personal Baidu account needs 实名认证 (handheld ID photo) → associate 主体 → fill ICP at `搜索展现 → 站点属性 → 主体备案号`. Then submit sitemap at `资源提交 → 普通收录 → sitemap` tab with `https://maaker.cn/sitemap.xml`.
+- **Analytics caveat**: the Umami website is bound to `maaker.cn`, but `/` immediately redirects to `/sbti`. The redirect often happens before the tracking script finishes, so Baidu-sourced sessions record as 0-second bounces even though users engage. If you add analytics, either move tracking to `/sbti` or stop the redirect.
 - When adding new types: update `sitemap.xml`, ensure `generateStaticParams` picks them up, and they'll auto-get structured data from the `[code]/page.tsx` template.
 
 ## Gotchas
@@ -75,4 +79,4 @@ Any change to pattern format, dimension order, or special-type logic must keep b
 - **Share URL format is load-bearing**: `https://maaker.cn/sbti/result?d=<encoded>` links are distributed — keep `decodeShareUrl` backwards compatible.
 - **Tailwind v4**: no `tailwind.config.ts`. Add tokens via `@theme` in `src/app/globals.css`.
 - **Client vs server components**: `/sbti` landing is a server component (has `metadata` export). Anything using `useSearchParams`/`useState` must be `'use client'` and, for search params, wrapped in `<Suspense>`.
-- **Deployment**: static files in `out/` are served via nginx on the production server. After `npm run build`, the `out/` directory needs to be deployed. The site lives under the `/sbti` path on `maaker.cn`.
+- **Deployment**: static files in `out/` are served via nginx on the production server (`1.15.12.53`, user `xiaopang`). After `npm run build`, sync with `rsync -az --delete out/ xiaopang@1.15.12.53:/var/www/maaker.cn/sbti/` (confirm the exact nginx root before deploying — credentials and nginx layout in `obsidian:Server/maaker-cn-服务器凭据.md`). The site lives under the `/sbti` path on `maaker.cn`.
