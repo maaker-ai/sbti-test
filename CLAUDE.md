@@ -79,4 +79,9 @@ Any change to pattern format, dimension order, or special-type logic must keep b
 - **Share URL format is load-bearing**: `https://maaker.cn/sbti/result?d=<encoded>` links are distributed — keep `decodeShareUrl` backwards compatible.
 - **Tailwind v4**: no `tailwind.config.ts`. Add tokens via `@theme` in `src/app/globals.css`.
 - **Client vs server components**: `/sbti` landing is a server component (has `metadata` export). Anything using `useSearchParams`/`useState` must be `'use client'` and, for search params, wrapped in `<Suspense>`.
-- **Deployment**: static files in `out/` are served via nginx on the production server (`1.15.12.53`, user `xiaopang`). After `npm run build`, sync with `rsync -az --delete out/ xiaopang@1.15.12.53:/var/www/maaker.cn/sbti/` (confirm the exact nginx root before deploying — credentials and nginx layout in `obsidian:Server/maaker-cn-服务器凭据.md`). The site lives under the `/sbti` path on `maaker.cn`.
+- **Deployment**: static files in `out/` are served via nginx on the same server (`1.15.12.53`, user `xiaopang`). Two environments, same server:
+  - **Production** (`main` branch → `https://maaker.cn`): `./scripts/deploy-prod.sh` → rsync to `/var/www/maaker-cn/`. Script refuses to run from non-main branch or with dirty tree.
+  - **Staging** (`staging` branch → `https://staging.maaker.cn`): `./scripts/deploy-staging.sh` → rsync to `/var/www/maaker-cn-staging/`. No branch check — deploys whatever you have checked out.
+  - **Workflow**: commit work on `staging` → deploy staging → manually verify in browser → `git checkout main && git merge staging` → deploy prod.
+  - **Staging protections** (nginx-level, `/etc/nginx/sites-available/staging-maaker-cn`): `/robots.txt` hardcoded to full Disallow, `/sitemap.xml` → 404, `X-Robots-Tag: noindex, nofollow, noarchive` on every response. Don't add the staging URL to ziyuan.baidu.com or Google Search Console.
+  - Credentials and nginx layout: `obsidian:Server/maaker-cn-服务器凭据.md`.
