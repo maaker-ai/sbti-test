@@ -3,6 +3,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { TYPE_LIBRARY, TYPE_IMAGES, TYPE_THUMBS, TYPE_GROUPS } from '@/data/types';
 import Footer from '@/components/Footer';
+import VisitorCount from '@/components/VisitorCount';
 
 export const metadata: Metadata = {
   title: '发现你的隐藏人格 | SBTI 人格测试',
@@ -168,6 +169,7 @@ export default function SBTIHome() {
           </Link>
 
           <p className="mt-5 text-sm text-muted-foreground/70">约 3-5 分钟 · 无需注册</p>
+          <VisitorCount />
         </div>
       </section>
 

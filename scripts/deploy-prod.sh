@@ -17,8 +17,8 @@ if [ -n "$(git status --porcelain)" ]; then
   exit 1
 fi
 
-echo "==> Building..."
-npm run build
+echo "==> Building (prod schema: sbti)..."
+NEXT_PUBLIC_SBTI_SCHEMA=sbti npm run build
 
 echo "==> Deploying to maaker.cn..."
 rsync -az --delete \

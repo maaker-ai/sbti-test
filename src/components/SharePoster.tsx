@@ -13,6 +13,9 @@ interface SharePosterProps {
   imageUrl?: string;
   theme?: PersonalityTheme;
   shareUrl?: string;
+  globalId?: number | null;
+  typeId?: number | null;
+  diagnosedAt?: string | null;
 }
 
 /**
@@ -21,7 +24,13 @@ interface SharePosterProps {
  * Fixed 440x780, all inline styles to avoid Tailwind oklab issues with html-to-image.
  */
 const SharePoster = forwardRef<HTMLDivElement, SharePosterProps>(
-  ({ finalType, badge, imageUrl, theme: themeProp, shareUrl }, ref) => {
+  ({ finalType, badge, imageUrl, theme: themeProp, shareUrl, globalId, typeId, diagnosedAt }, ref) => {
+    const topLabel =
+      globalId != null
+        ? `SBTI Bullshit 病历档案 · No.${String(globalId).padStart(4, '0')}`
+        : 'SBTI 人格测试';
+    const showStamp = typeId != null && !!diagnosedAt;
+    const stampDate = diagnosedAt ? diagnosedAt.replace(/-/g, '.') : '';
     const theme = themeProp ?? finalType.theme ?? DEFAULT_THEME;
     const [imgBase64, setImgBase64] = useState<string | null>(null);
     const [qrDataUrl, setQrDataUrl] = useState<string | null>(null);
@@ -100,20 +109,48 @@ const SharePoster = forwardRef<HTMLDivElement, SharePosterProps>(
           }}
         />
 
-        {/* Top label */}
+        {/* Diagnosis stamp — rotated rubber-stamp look, bottom-right */}
+        {showStamp && (
+          <div
+            style={{
+              position: 'absolute',
+              right: 24,
+              bottom: 110,
+              transform: 'rotate(-6deg)',
+              border: `1.5px solid ${theme.accent}`,
+              borderRadius: 4,
+              padding: '8px 12px',
+              background: `${theme.accent}10`,
+              color: theme.accent,
+              textAlign: 'center',
+              lineHeight: 1.4,
+              pointerEvents: 'none',
+            }}
+          >
+            <div style={{ fontSize: 11, fontWeight: 700, whiteSpace: 'nowrap' }}>
+              第 {typeId} 位 {finalType.code}型 患者
+            </div>
+            <div style={{ fontSize: 11, fontWeight: 400, whiteSpace: 'nowrap', opacity: 0.9 }}>
+              {stampDate} 确诊
+            </div>
+          </div>
+        )}
+
+        {/* Top label — archive header when globalId present, else original */}
         <div
           style={{
             marginTop: 36,
-            fontSize: 10,
-            letterSpacing: 4,
+            fontSize: globalId != null ? 11 : 10,
+            letterSpacing: globalId != null ? 2 : 4,
             color: theme.accent,
             textTransform: 'uppercase',
             fontWeight: 600,
-            opacity: 0.8,
+            opacity: 0.85,
             position: 'relative',
+            whiteSpace: 'nowrap',
           }}
         >
-          SBTI 人格测试
+          {topLabel}
         </div>
 
         {/* Character image — the visual hero */}

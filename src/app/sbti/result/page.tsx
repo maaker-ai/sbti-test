@@ -26,10 +26,39 @@ function ResultContent() {
   const [toast, setToast] = useState('');
   const [posterPreview, setPosterPreview] = useState('');
   const [currentUrl, setCurrentUrl] = useState('');
+  const [completion, setCompletion] = useState<{
+    globalId: number;
+    typeId: number;
+    date: string;
+  } | null>(null);
 
   useEffect(() => {
     setCurrentUrl(window.location.href);
-  }, []);
+    // Receiver of share link never reads completion record — they don't own a number.
+    if (isFromShare) return;
+    try {
+      const raw = sessionStorage.getItem('sbti:completion');
+      if (!raw) return;
+      const parsed = JSON.parse(raw) as {
+        globalId?: number;
+        typeId?: number;
+        date?: string;
+      };
+      if (
+        typeof parsed.globalId === 'number' &&
+        typeof parsed.typeId === 'number' &&
+        typeof parsed.date === 'string'
+      ) {
+        setCompletion({
+          globalId: parsed.globalId,
+          typeId: parsed.typeId,
+          date: parsed.date,
+        });
+      }
+    } catch {
+      // ignore parse/storage errors
+    }
+  }, [isFromShare]);
 
   const shareEncoded = searchParams.get('r');
 
@@ -166,6 +195,9 @@ function ResultContent() {
         imageUrl={imageUrl}
         theme={theme}
         shareUrl={currentUrl}
+        globalId={completion?.globalId ?? null}
+        typeId={completion?.typeId ?? null}
+        diagnosedAt={completion?.date ?? null}
       />
 
       {/* Page content */}
@@ -208,6 +240,18 @@ function ResultContent() {
           />
 
           <div className="relative z-10 max-w-lg mx-auto animate-fade-in-up">
+            {completion?.globalId != null && (
+              <div
+                className="inline-flex items-center gap-1.5 px-3 py-1 mb-4 rounded-full text-[11px] font-medium tracking-wider"
+                style={{
+                  color: theme.accent,
+                  background: `${theme.accent}10`,
+                  border: `1px solid ${theme.accent}30`,
+                }}
+              >
+                SBTI Bullshit 病历档案 · No.{String(completion.globalId).padStart(4, '0')}
+              </div>
+            )}
             <p className="text-xs font-medium mb-6 uppercase tracking-[0.2em]" style={{ color: theme.accent }}>
               {modeKicker}
             </p>
@@ -250,6 +294,16 @@ function ResultContent() {
             >
               {badge}
             </div>
+
+            {/* Diagnosis stamp (screen version — no rotation, info-only) */}
+            {completion?.typeId != null && completion?.date && (
+              <div
+                className="mb-5 text-xs"
+                style={{ color: `${theme.accent}CC` }}
+              >
+                第 {completion.typeId} 位 {finalType.code}型 患者 · {completion.date.replace(/-/g, '.')} 确诊
+              </div>
+            )}
 
             {/* Intro quote */}
             <p className="text-lg md:text-xl italic leading-relaxed px-4 mb-0" style={{ color: `${theme.accent}DD` }}>

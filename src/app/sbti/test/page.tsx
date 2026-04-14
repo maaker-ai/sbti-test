@@ -3,7 +3,8 @@
 import { useState, useCallback, useMemo, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { questions, specialQuestions, type Question } from '@/data/questions';
-import { encodeResult, computeResult, encodeShareUrl } from '@/data/scoring';
+import { computeResult, encodeShareUrl } from '@/data/scoring';
+import { recordCompletion, warmUpSupabase } from '@/lib/supabase';
 
 function shuffle<T>(array: T[]): T[] {
   const arr = [...array];
@@ -47,6 +48,7 @@ export default function TestPage() {
     regularShuffled.splice(insertPos, 0, drinkQ1);
     setShuffledQuestions(regularShuffled);
     setMounted(true);
+    warmUpSupabase();
   }, []);
 
   // Visible questions depends on answers (drink_gate_q2 shows conditionally)
@@ -123,10 +125,26 @@ export default function TestPage() {
     [answers, currentIndex, visibleQuestions.length, goToQuestion]
   );
 
-  const handleSubmit = useCallback(() => {
+  const handleSubmit = useCallback(async () => {
     if (!allAnswered) return;
     const result = computeResult(answers);
     const shareCode = encodeShareUrl(result);
+    const typeCode = result.finalType.code;
+
+    // Fire-and-await: 800ms timeout is enforced inside recordCompletion.
+    // Any failure (network / RPC / timeout) returns null and does NOT block navigation.
+    const completion = await recordCompletion(typeCode);
+    if (completion) {
+      try {
+        sessionStorage.setItem(
+          'sbti:completion',
+          JSON.stringify({ ...completion, typeCode })
+        );
+      } catch {
+        // sessionStorage can throw in private mode — ignore, still navigate.
+      }
+    }
+
     router.push(`/sbti/result?r=${encodeURIComponent(shareCode)}`);
   }, [allAnswered, answers, router]);
 

@@ -6,8 +6,8 @@ set -euo pipefail
 
 cd "$(dirname "$0")/.."
 
-echo "==> Building..."
-npm run build
+echo "==> Building (staging schema: sbti_staging)..."
+NEXT_PUBLIC_SBTI_SCHEMA=sbti_staging npm run build
 
 echo "==> Deploying to staging.maaker.cn..."
 rsync -az --delete \
