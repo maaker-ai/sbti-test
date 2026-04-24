@@ -120,7 +120,7 @@ export default function TestPage() {
         }
       }
 
-      router.push(`/sbti/result?r=${encodeURIComponent(shareCode)}`);
+      router.push(`/result?r=${encodeURIComponent(shareCode)}`);
     },
     [router]
   );

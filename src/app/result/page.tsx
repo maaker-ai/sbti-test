@@ -164,7 +164,7 @@ function ResultContent() {
         <h1 className="font-display text-2xl mb-4 text-foreground">无效的结果数据</h1>
         <p className="text-muted-foreground mb-8">请重新进行测试</p>
         <Link
-          href="/sbti/test"
+          href="/test"
           className="px-6 py-3 rounded-xl bg-gradient-to-r from-primary to-secondary text-white font-semibold transition-colors btn-press"
         >
           重新测试
@@ -327,7 +327,7 @@ function ResultContent() {
             {isFromShare ? (
               /* 扫码/分享链接进来的人 → 引导去测试 */
               <Link
-                href="/sbti/test"
+                href="/test"
                 className="w-full py-3.5 rounded-xl text-white font-semibold transition-all duration-300 flex items-center justify-center gap-2 btn-press min-h-[48px]"
                 style={{ background: `linear-gradient(135deg, ${theme.gradientFrom}, ${theme.gradientTo})`, boxShadow: `0 0 20px ${theme.accent}30` }}
               >
@@ -437,14 +437,14 @@ function ResultContent() {
       <section className="px-4 py-8 border-t border-border/30">
         <div className="max-w-lg mx-auto space-y-3">
           <Link
-            href="/sbti/test"
+            href="/test"
             className="w-full py-3 rounded-xl border border-border/30 hover:border-border/50 text-muted-foreground text-sm font-medium transition-colors flex items-center justify-center min-h-[44px]"
           >
             重新测试
           </Link>
 
           <Link
-            href="/sbti/types"
+            href="/types"
             className="w-full py-3 rounded-xl text-muted-foreground/70 hover:text-muted-foreground text-sm font-medium transition-colors flex items-center justify-center min-h-[44px]"
           >
             查看全部 26 种人格

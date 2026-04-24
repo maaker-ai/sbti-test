@@ -108,7 +108,7 @@ export default async function TypeDetailPage({
       <div className="px-4 pt-10 pb-4">
         <div className="max-w-2xl mx-auto">
           <Link
-            href="/sbti/types"
+            href="/types"
             className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors mb-8 min-h-[44px]"
           >
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -204,7 +204,7 @@ export default async function TypeDetailPage({
       <section className="px-4 py-10 text-center border-t border-border/30">
         <p className="text-muted-foreground mb-5">你也是{type.cn}吗？去测测看</p>
         <Link
-          href="/sbti/test"
+          href="/test"
           className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-primary to-secondary text-white font-semibold transition-all duration-300 hover:scale-105 glow-primary btn-press min-h-[48px]"
         >
           开始测试
