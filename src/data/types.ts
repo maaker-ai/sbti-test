@@ -217,39 +217,44 @@ export const TYPE_LIBRARY: Record<string, PersonalityType> = {
   },
 };
 
+// 注意：basePath='/sbti' 在 next.config.ts 中设置，但 next/image
+// 在 unoptimized + output:'export' 下 *不会* 自动给原生 <img src> 加 basePath
+// 前缀。静态字符串路径需手动带前缀。
+const BP = '/sbti';
+
 export const TYPE_IMAGES: Record<string, string> = {
-  IMSB: '/images/IMSB.png',
-  BOSS: '/images/BOSS.png',
-  MUM: '/images/MUM.png',
-  FAKE: '/images/FAKE.png',
-  'Dior-s': '/images/Dior-s.jpg',
-  DEAD: '/images/DEAD.png',
-  ZZZZ: '/images/ZZZZ.png',
-  GOGO: '/images/GOGO.png',
-  FUCK: '/images/FUCK.png',
-  CTRL: '/images/CTRL.png',
-  HHHH: '/images/HHHH.png',
-  SEXY: '/images/SEXY.png',
-  OJBK: '/images/OJBK.png',
-  'JOKE-R': '/images/JOKE-R.jpg',
-  POOR: '/images/POOR.png',
-  'OH-NO': '/images/OH-NO.png',
-  MONK: '/images/MONK.png',
-  SHIT: '/images/SHIT.png',
-  'THAN-K': '/images/THAN-K.png',
-  MALO: '/images/MALO.png',
-  'ATM-er': '/images/ATM-er.png',
-  'THIN-K': '/images/THIN-K.png',
-  SOLO: '/images/SOLO.png',
-  'LOVE-R': '/images/LOVE-R.png',
-  'WOC!': '/images/WOC.png',
-  DRUNK: '/images/DRUNK.png',
-  IMFW: '/images/IMFW.png',
+  IMSB: `${BP}/images/IMSB.png`,
+  BOSS: `${BP}/images/BOSS.png`,
+  MUM: `${BP}/images/MUM.png`,
+  FAKE: `${BP}/images/FAKE.png`,
+  'Dior-s': `${BP}/images/Dior-s.jpg`,
+  DEAD: `${BP}/images/DEAD.png`,
+  ZZZZ: `${BP}/images/ZZZZ.png`,
+  GOGO: `${BP}/images/GOGO.png`,
+  FUCK: `${BP}/images/FUCK.png`,
+  CTRL: `${BP}/images/CTRL.png`,
+  HHHH: `${BP}/images/HHHH.png`,
+  SEXY: `${BP}/images/SEXY.png`,
+  OJBK: `${BP}/images/OJBK.png`,
+  'JOKE-R': `${BP}/images/JOKE-R.jpg`,
+  POOR: `${BP}/images/POOR.png`,
+  'OH-NO': `${BP}/images/OH-NO.png`,
+  MONK: `${BP}/images/MONK.png`,
+  SHIT: `${BP}/images/SHIT.png`,
+  'THAN-K': `${BP}/images/THAN-K.png`,
+  MALO: `${BP}/images/MALO.png`,
+  'ATM-er': `${BP}/images/ATM-er.png`,
+  'THIN-K': `${BP}/images/THIN-K.png`,
+  SOLO: `${BP}/images/SOLO.png`,
+  'LOVE-R': `${BP}/images/LOVE-R.png`,
+  'WOC!': `${BP}/images/WOC.png`,
+  DRUNK: `${BP}/images/DRUNK.png`,
+  IMFW: `${BP}/images/IMFW.png`,
 };
 
 // 128px thumbnails for list/avatar use (4-6KB each vs 500KB originals)
 export const TYPE_THUMBS: Record<string, string> = Object.fromEntries(
-  Object.entries(TYPE_IMAGES).map(([k, v]) => [k, v.replace('/images/', '/images/thumb/')])
+  Object.entries(TYPE_IMAGES).map(([k, v]) => [k, v.replace(`${BP}/images/`, `${BP}/images/thumb/`)])
 );
 
 export const NORMAL_TYPES: NormalType[] = [

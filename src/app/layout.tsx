@@ -17,13 +17,13 @@ export const metadata: Metadata = {
     siteName: 'SBTI 人格测试',
     title: 'SBTI 人格测试 — 发现你的隐藏人格',
     description: '15个维度、26种人格、30道题 — 你是拿捏者、小丑、还是……酒鬼？',
-    images: [{ url: '/images/CTRL.png', width: 1024, height: 1024, alt: 'SBTI 人格测试' }],
+    images: [{ url: '/sbti/images/CTRL.png', width: 1024, height: 1024, alt: 'SBTI 人格测试' }],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'SBTI 人格测试 — 发现你的隐藏人格',
     description: '15个维度、26种人格、30道题 — 你是拿捏者、小丑、还是……酒鬼？',
-    images: ['/images/CTRL.png'],
+    images: ['/sbti/images/CTRL.png'],
   },
   robots: {
     index: true,

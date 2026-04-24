@@ -10,13 +10,13 @@ export const metadata: Metadata = {
     title: 'SBTI 26种人格类型总览',
     description: '探索 SBTI 的 26 种独特人格类型 — 拿捏者、酒鬼、小丑、尤物、死者...找到属于你的那一个。',
     url: 'https://maaker.cn/sbti/types',
-    images: [{ url: '/images/CTRL.png', width: 1024, height: 1024, alt: 'SBTI 26种人格类型' }],
+    images: [{ url: '/sbti/images/CTRL.png', width: 1024, height: 1024, alt: 'SBTI 26种人格类型' }],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'SBTI 26种人格类型总览',
     description: '探索 SBTI 的 26 种独特人格类型 — 拿捏者、酒鬼、小丑、尤物、死者...找到属于你的那一个。',
-    images: ['/images/CTRL.png'],
+    images: ['/sbti/images/CTRL.png'],
   },
   alternates: {
     canonical: 'https://maaker.cn/sbti/types',
