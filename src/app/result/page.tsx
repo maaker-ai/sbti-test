@@ -16,6 +16,7 @@ import { TYPE_IMAGES, DEFAULT_THEME } from '@/data/types';
 import RadarChart from '@/components/RadarChart';
 import SharePoster from '@/components/SharePoster';
 import Footer from '@/components/Footer';
+import MaakerCTA from '@/components/MaakerCTA';
 
 function ResultContent() {
   const searchParams = useSearchParams();
@@ -451,6 +452,9 @@ function ResultContent() {
           </Link>
         </div>
       </section>
+
+      {/* 强引流 CTA：测完结果是用户最想"接着探索"的时机 */}
+      <MaakerCTA />
 
       <div className="flex-1" />
       <Footer />

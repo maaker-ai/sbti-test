@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import MaakerBar from '@/components/MaakerBar';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -56,6 +57,7 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-dvh bg-background text-foreground antialiased">
+        <MaakerBar />
         {children}
       </body>
     </html>
